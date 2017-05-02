@@ -24,6 +24,9 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.textView2)
     TextView textView2;
 
+    @BindView(R.id.myButton)
+    Button myButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,11 +55,10 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        Button myButton = (Button) findViewById(R.id.myButton);
         myButton.setOnClickListener((new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                textView2.setText("Heshan sandamal");
+                textView2.setText("Bluetooth device tracker");
             }
         }));
 
