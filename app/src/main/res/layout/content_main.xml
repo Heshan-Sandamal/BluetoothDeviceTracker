@@ -16,5 +16,12 @@
     <TextView
             android:text="Hello World!"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+        android:id="@+id/textView2" />
+    <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Button"
+        android:layout_below="@+id/textView2"
+        android:layout_toRightOf="@+id/textView2"
+        android:layout_toEndOf="@+id/textView2"
+        android:layout_marginTop="42dp"
+        android:id="@+id/myButton" />
 </RelativeLayout>
