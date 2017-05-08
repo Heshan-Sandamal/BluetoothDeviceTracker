@@ -1,8 +1,12 @@
 package com.cs4492.cseuom.bluetoothdevicetracker;
 
+import android.bluetooth.BluetoothAdapter;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,6 +24,10 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private BluetoothAdapter BTAdapter;
+
+
+    public static int REQUEST_BLUETOOTH = 1;
 
     @BindView(R.id.textView2)
     TextView textView2;
@@ -31,6 +39,24 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        BTAdapter = BluetoothAdapter.getDefaultAdapter();
+        // Phone does not support Bluetooth so let the user know and exit.
+        if (BTAdapter == null) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Not compatible")
+                    .setMessage("Your phone does not support Bluetooth")
+                    .setPositiveButton("Exit", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            System.exit(0);
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }
+        if (!BTAdapter.isEnabled()) {
+            Intent enableBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBT, REQUEST_BLUETOOTH);
+        }
         //ButterKnife.bind(this);
         ButterKnife.bind(this);
 
@@ -104,9 +130,11 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.Paired) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+            startActivity(new Intent(MainActivity.this, ListofDevices.class));
+        } else if (id == R.id.Available) {
+            startActivity(new Intent(MainActivity.this, ListofAvailableDevices.class));
 
         } else if (id == R.id.nav_slideshow) {
 
