@@ -132,13 +132,14 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.Paired) {
             // Handle the camera action
-            startActivity(new Intent(MainActivity.this, ListofDevices.class));
+            startActivity(new Intent(MainActivity.this, PairedDevicesListActivity.class));
         } else if (id == R.id.Available) {
-            startActivity(new Intent(MainActivity.this, ListofAvailableDevices.class));
+            startActivity(new Intent(MainActivity.this, AvailableDevicesList.class));
 
         } else if (id == R.id.nav_slideshow) {
-
+           // startActivity(new Intent(MainActivity.this, PairedDevicesListActivity.class));
         } else if (id == R.id.nav_manage) {
+            //startActivity(new Intent(MainActivity.this, AvailableDevicesList.class));
 
         } else if (id == R.id.nav_share) {
 

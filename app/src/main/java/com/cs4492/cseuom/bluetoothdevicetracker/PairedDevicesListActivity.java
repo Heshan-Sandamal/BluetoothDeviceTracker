@@ -1,21 +1,25 @@
 package com.cs4492.cseuom.bluetoothdevicetracker;
 
-import android.app.ListActivity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,7 +32,11 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
 
-public class ListofAvailableDevices extends ListActivity{
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+public class PairedDevicesListActivity extends AppCompatActivity {
+
     private TextView textview1 ;
     BluetoothAdapter btAdapter;
     ListView listview ;
@@ -46,30 +54,78 @@ public class ListofAvailableDevices extends ListActivity{
     private byte readBuffer [] ;
     private Thread workerThread ;
 
+    @BindView(R.id.mylist)
+    ListView list;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_listof_available_devices);
-        listview=(ListView) findViewById(R.layout.activity_listof_available_devices);
+        setContentView(R.layout.activity_paired_devices_list);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ButterKnife.bind(this);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Paired Devices");
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Enter name for your device");
+
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                m_Text = input.getText().toString();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+        //ListeningThread t = new ListeningThread();
+        //  t.start();
+        //  Log.d("mylog" ,"listofdevices") ;
+
+        listview=(ListView) findViewById(R.layout.activity_paired_devices_list);
 
 
         adapter=new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_checked,
                 mDeviceList);
-        setListAdapter(adapter);
-        scanbutton = (Button) findViewById(R.id.addBtnavailable);
+
+
+
+        list.setAdapter(adapter);
+        scanbutton = (Button) findViewById(R.id.addBtn);
 
 
         scanbutton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                mDeviceList.clear();
+                if(m_Text.equals("")){
+                    Toast.makeText(PairedDevicesListActivity.this,"Please Enter Name for Your Device !!!",Toast.LENGTH_SHORT).show();
+
+                }else {
+                    mDeviceList.clear();
                     scanDevices();
+                }
+
             }
         }) ;
 
 
 
-        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
 
             @Override
@@ -86,9 +142,13 @@ public class ListofAvailableDevices extends ListActivity{
                     // Initiate a connection request in a separate thread
                     // ConnectingThread t = new ConnectingThread(bluetoothDevice);
                     // t.start();
-
-                    pairDevice(bluetoothDevice) ;
-                    Toast.makeText(ListofAvailableDevices.this,"Initializing Pairing Request to"+MAC,Toast.LENGTH_SHORT).show();
+                    //*******************************************
+                    //do whatever you want when click an item
+                    // openBT(bluetoothDevice) ;
+                    //  sendData();
+                    //*******************************************
+                    //pairDevice(bluetoothDevice) ;
+                    // Toast.makeText(ListofDevices.this,"Initializing Connection Request to"+MAC,Toast.LENGTH_SHORT).show();
 
                 }else{
                     // Log.d("mylog" , "NAaaaaaaaaaa") ;
@@ -97,7 +157,6 @@ public class ListofAvailableDevices extends ListActivity{
 
             }
         });
-
     }
     void openBT(BluetoothDevice mmDevice) throws IOException {
         UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb"); //Standard                //SerialPortService ID
@@ -181,36 +240,57 @@ public class ListofAvailableDevices extends ListActivity{
             e.printStackTrace();
         }
     }
-    private void scanDevices() {
-        btAdapter = BluetoothAdapter.getDefaultAdapter();
-        CheckBluetoothState();
-        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        registerReceiver(mBtReceiver, filter);
-
-        // Getting the Bluetooth adapter
-        btAdapter = BluetoothAdapter.getDefaultAdapter();
-        if(btAdapter != null) {
-            btAdapter.startDiscovery();
-            Toast.makeText(this, "Starting discovery...", Toast.LENGTH_SHORT).show();
-        }
-        else {
-            Toast.makeText(this, "Bluetooth disabled or not available.", Toast.LENGTH_SHORT).show();
-        }
-    }
-    private final BroadcastReceiver mBtReceiver = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) { //give available devices
+    private final BroadcastReceiver mPairReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                mDeviceList.add(device.getName()+" # "+device.getAddress()); // get mac address concat device.getAddress()
-                adapter.notifyDataSetChanged();
-                // Log.d("mylog" ,device.getAddress() + ", " + device.getName()) ;
+
+            if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
+                final int state        = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
+                final int prevState    = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, BluetoothDevice.ERROR);
+
+                if (state == BluetoothDevice.BOND_BONDED && prevState == BluetoothDevice.BOND_BONDING) {
+                    Toast.makeText(PairedDevicesListActivity.this,"Paired",Toast.LENGTH_SHORT).show();
+                } else if (state == BluetoothDevice.BOND_NONE && prevState == BluetoothDevice.BOND_BONDED){
+                    Toast.makeText(PairedDevicesListActivity.this,"Unpaired",Toast.LENGTH_SHORT).show();
+                }
 
             }
         }
     };
+    IntentFilter intent = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
+    // registerReceiver(mPairReceiver, intent);
+
+    private void scanDevices() {
+        btAdapter = BluetoothAdapter.getDefaultAdapter();
+        CheckBluetoothState();
+//        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+//        registerReceiver(mBtReceiver, filter);
+
+        // Getting the Bluetooth adapter
+//        btAdapter = BluetoothAdapter.getDefaultAdapter();
+//        if(btAdapter != null) {
+//            btAdapter.startDiscovery();
+//            Toast.makeText(this, "Starting discovery...", Toast.LENGTH_SHORT).show();
+//        }
+//        else {
+//            Toast.makeText(this, "Bluetooth disabled or not available.", Toast.LENGTH_SHORT).show();
+//        }
+    }
+
+    //    private final BroadcastReceiver mBtReceiver = new BroadcastReceiver() {
+//
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            String action = intent.getAction();
+//            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+//                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+//                mDeviceList.add(device.getName()+" # "+device.getAddress()); // get mac address concat device.getAddress()
+//                adapter.notifyDataSetChanged();
+//                // Log.d("mylog" ,device.getAddress() + ", " + device.getName()) ;
+//
+//            }
+//        }
+//    };
     private void CheckBluetoothState() {
         // Checks for the Bluetooth support and then makes sure it is turned on
         // If it isn't turned on, request to turn it on
@@ -227,17 +307,17 @@ public class ListofAvailableDevices extends ListActivity{
                 adapter.notifyDataSetChanged();
                 // Listing paired devices
                 //textview1.append("\nPaired Devices are:");
-//                mDeviceList.add("Paired Devices are:");
-//                adapter.notifyDataSetChanged();
-//
-//                Set<BluetoothDevice> devices = btAdapter.getBondedDevices();
-//                for (BluetoothDevice device : devices) {
-//                    // textview1.append("\n  Device: " + device.getName() + ", " + device);
-//                    mDeviceList.add(device.getName()+" # "+device); // get mac address  concat "device"
-//                    adapter.notifyDataSetChanged();
-//                }
-                mDeviceList.add("Available Devices are:");
+                mDeviceList.add("Paired Devices are:");
                 adapter.notifyDataSetChanged();
+
+                Set<BluetoothDevice> devices = btAdapter.getBondedDevices();
+                for (BluetoothDevice device : devices) {
+                    // textview1.append("\n  Device: " + device.getName() + ", " + device);
+                    mDeviceList.add(device.getName()+" # "+device); // get mac address  concat "device"
+                    adapter.notifyDataSetChanged();
+                }
+//                mDeviceList.add("Available Devices are:");
+//                adapter.notifyDataSetChanged();
             } else {
                 //Prompt user to turn on Bluetooth
                 Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -245,4 +325,7 @@ public class ListofAvailableDevices extends ListActivity{
             }
         }
     }
+
+
+
 }
