@@ -2,6 +2,7 @@ package com.cs4492.cseuom.bluetoothdevicetracker.socket_connection;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.os.Handler;
 import android.util.Log;
 
 import java.io.IOException;
@@ -17,13 +18,14 @@ public class ConnectThread extends Thread {
     private static UUID MY_UUID;
     private final BluetoothSocket mmSocket;
     private final BluetoothDevice mmDevice;
+    private Handler handler;
 
-    public ConnectThread(BluetoothDevice device) {
+    public ConnectThread(BluetoothDevice device,Handler handler) {
         // Use a temporary object that is later assigned to mmSocket
         // because mmSocket is final.
         BluetoothSocket tmp = null;
         mmDevice = device;
-        this.MY_UUID=device.getUuids()[0].getUuid();
+        this.MY_UUID=device.getUuids()[device.getUuids().length-1].getUuid();
 
         try {
             // Get a BluetoothSocket to connect with the given BluetoothDevice.
@@ -33,6 +35,7 @@ public class ConnectThread extends Thread {
             Log.e(TAG, "Socket's create() method failed", e);
         }
         mmSocket = tmp;
+        this.handler=handler;
     }
 
     public void run() {
@@ -44,7 +47,7 @@ public class ConnectThread extends Thread {
             // until it succeeds or throws an exception.
             mmSocket.connect();
         } catch (IOException connectException) {
-            // Unable to connect; close the socket and return.
+            Log.e(TAG, "Could not connect to the client socket", connectException);
             try {
                 mmSocket.close();
             } catch (IOException closeException) {
@@ -56,14 +59,17 @@ public class ConnectThread extends Thread {
         // The connection attempt succeeded. Perform work associated with
         // the connection in a separate thread.
         try {
-            manageMyConnectedSocket(mmSocket);
+            manageMyConnectedSocket(mmSocket,this.handler);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void manageMyConnectedSocket(BluetoothSocket mmSocket) throws IOException {
-        new MyBluetoothService(mmSocket);
+    private void manageMyConnectedSocket(BluetoothSocket mmSocket, Handler handler) throws IOException {
+        MyBluetoothService bds=new MyBluetoothService(handler);
+        MyBluetoothService.ConnectedThread ct= bds.new ConnectedThread(mmSocket);
+        ct.start();
+        ct.write("heshan".getBytes());
     }
 
     // Closes the client socket and causes the thread to finish.

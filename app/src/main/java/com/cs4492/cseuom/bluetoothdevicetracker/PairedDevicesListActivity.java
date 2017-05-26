@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
+import android.os.ParcelUuid;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -23,6 +25,9 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.cs4492.cseuom.bluetoothdevicetracker.socket_connection.AcceptThread;
+import com.cs4492.cseuom.bluetoothdevicetracker.socket_connection.ConnectThread;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -97,7 +102,7 @@ public class PairedDevicesListActivity extends AppCompatActivity {
         //  t.start();
         //  Log.d("mylog" ,"listofdevices") ;
 
-        listview=(ListView) findViewById(R.layout.activity_paired_devices_list);
+//        /listview=(ListView) findViewById(R.layout.activity_paired_devices_list);
 
 
         adapter=new ArrayAdapter<String>(this,
@@ -109,6 +114,7 @@ public class PairedDevicesListActivity extends AppCompatActivity {
         list.setAdapter(adapter);
         scanbutton = (Button) findViewById(R.id.addBtn);
 
+        btAdapter = BluetoothAdapter.getDefaultAdapter();
 
         scanbutton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -122,8 +128,6 @@ public class PairedDevicesListActivity extends AppCompatActivity {
 
             }
         }) ;
-
-
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -139,6 +143,18 @@ public class PairedDevicesListActivity extends AppCompatActivity {
 
                     String MAC = itemValue.substring(itemValue.length() - 17);
                     BluetoothDevice bluetoothDevice = btAdapter.getRemoteDevice(MAC);
+
+                    Log.d("MAC",bluetoothDevice.getAddress());
+
+                    for(ParcelUuid pl:bluetoothDevice.getUuids()){
+                        Log.d("UUID",pl.getUuid().toString());
+                    }
+
+                    ConnectThread connectThread = new ConnectThread(bluetoothDevice,PairedDevicesListActivity.this.handler);
+                    connectThread.start();
+                    Toast.makeText(PairedDevicesListActivity.this,"Connected to the thread",Toast.LENGTH_SHORT).show();
+
+
                     // Initiate a connection request in a separate thread
                     // ConnectingThread t = new ConnectingThread(bluetoothDevice);
                     // t.start();
@@ -261,7 +277,6 @@ public class PairedDevicesListActivity extends AppCompatActivity {
     // registerReceiver(mPairReceiver, intent);
 
     private void scanDevices() {
-        btAdapter = BluetoothAdapter.getDefaultAdapter();
         CheckBluetoothState();
 //        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
 //        registerReceiver(mBtReceiver, filter);
@@ -325,6 +340,13 @@ public class PairedDevicesListActivity extends AppCompatActivity {
             }
         }
     }
+
+    private final Handler handler=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+        }
+    };
 
 
 

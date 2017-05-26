@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(new Intent(MainActivity.this, AvailableDevicesList.class));
 
         } else if (id == R.id.nav_slideshow) {
-           // startActivity(new Intent(MainActivity.this, PairedDevicesListActivity.class));
+            startActivity(new Intent(MainActivity.this, ServerActivity.class));
         } else if (id == R.id.nav_manage) {
             //startActivity(new Intent(MainActivity.this, AvailableDevicesList.class));
 

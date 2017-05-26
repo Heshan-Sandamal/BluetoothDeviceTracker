@@ -1,5 +1,6 @@
 package com.cs4492.cseuom.bluetoothdevicetracker.socket_connection;
 
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,8 +20,8 @@ public class MyBluetoothService {
     private Handler mHandler; // handler that gets info from Bluetooth service
 
 
-    public MyBluetoothService(BluetoothSocket socket) throws IOException {
-        new ConnectedThread(socket).start();
+    public MyBluetoothService(Handler mHandler) throws IOException {
+        this.mHandler=mHandler;
     }
 
     // Defines several constants used when transmitting messages between the
@@ -33,7 +34,7 @@ public class MyBluetoothService {
         // ... (Add other message types here as needed.)
     }
 
-    private class ConnectedThread extends Thread {
+    public class ConnectedThread extends Thread {
         private final BluetoothSocket mmSocket;
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
@@ -74,7 +75,13 @@ public class MyBluetoothService {
                     Message readMsg = mHandler.obtainMessage(
                             MessageConstants.MESSAGE_READ, numBytes, -1,
                             mmBuffer);
+                    String readMessage = new String(mmBuffer, 0, numBytes);
+                    Log.d("received message","reading information");
+                    Log.d("received message",readMsg.toString());
+                    Log.d("received message",readMessage);
                     readMsg.sendToTarget();
+
+
                 } catch (IOException e) {
                     Log.d(TAG, "Input stream was disconnected", e);
                     break;
@@ -86,6 +93,7 @@ public class MyBluetoothService {
         public void write(byte[] bytes) {
             try {
                 mmOutStream.write(bytes);
+                mmOutStream.flush();
 
                 // Share the sent message with the UI activity.
                 Message writtenMsg = mHandler.obtainMessage(
