@@ -19,6 +19,11 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.cs4492.cseuom.bluetoothdevicetracker.socket_connection.ConnectedSockets;
+import com.cs4492.cseuom.bluetoothdevicetracker.socket_connection.MyBluetoothService;
+
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -84,7 +89,10 @@ public class MainActivity extends AppCompatActivity
         myButton.setOnClickListener((new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                textView2.setText("Bluetooth device tracker");
+                List<MyBluetoothService.ConnectedThread> socketObjectsList = ConnectedSockets.getSocketObjectsList();
+                for (MyBluetoothService.ConnectedThread ob:socketObjectsList){
+                    ob.write("sending message".getBytes());
+                }
             }
         }));
 

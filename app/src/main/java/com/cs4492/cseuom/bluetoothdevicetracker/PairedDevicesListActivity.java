@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -61,10 +63,10 @@ public class PairedDevicesListActivity extends AppCompatActivity {
 
     @BindView(R.id.mylist)
     ListView list;
+    private SQLiteDatabase database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_paired_devices_list);
@@ -74,36 +76,14 @@ public class PairedDevicesListActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Paired Devices");
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Enter name for your device");
+        database = openOrCreateDatabase("BluetoothDeviceTracker",MODE_PRIVATE,null);
+        database.execSQL("CREATE TABLE IF NOT EXISTS User(userName VARCHAR);");
 
+        Cursor resultSet = database.rawQuery("Select * from User",null);
 
-        final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        builder.setView(input);
-
-
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                m_Text = input.getText().toString();
-            }
-        });
-
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        builder.show();
-        //ListeningThread t = new ListeningThread();
-        //  t.start();
-        //  Log.d("mylog" ,"listofdevices") ;
-
-//        /listview=(ListView) findViewById(R.layout.activity_paired_devices_list);
-
+        if(!resultSet.moveToFirst()){
+            showNameInputDialog();
+        }
 
         adapter=new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_checked,
@@ -118,14 +98,8 @@ public class PairedDevicesListActivity extends AppCompatActivity {
 
         scanbutton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if(m_Text.equals("")){
-                    Toast.makeText(PairedDevicesListActivity.this,"Please Enter Name for Your Device !!!",Toast.LENGTH_SHORT).show();
-
-                }else {
                     mDeviceList.clear();
                     scanDevices();
-                }
-
             }
         }) ;
 
@@ -173,143 +147,48 @@ public class PairedDevicesListActivity extends AppCompatActivity {
 
             }
         });
-    }
-    void openBT(BluetoothDevice mmDevice) throws IOException {
-        UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb"); //Standard                //SerialPortService ID
-        mmSocket = mmDevice.createRfcommSocketToServiceRecord(uuid);
-        mmSocket.connect();
-        mmOutputStream = mmSocket.getOutputStream();
-        mmInputStream = mmSocket.getInputStream();
-        beginListenForData();
-        Log.d("mylog","bluetooth opened");
+        scanDevices();
     }
 
-    void beginListenForData() {
-        final Handler handler = new Handler();
-        final byte delimiter = 10; //This is the ASCII code for a newline character
+    private void showNameInputDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Enter name for your device");
 
-        stopWorker = false;
-        readBufferPosition = 0;
-        readBuffer = new byte[1024];
-        workerThread = new Thread(new Runnable() {
-            public void run() {
-                while(!Thread.currentThread().isInterrupted() && !stopWorker) {
-                    try {
-                        int bytesAvailable = mmInputStream.available();
-                        if(bytesAvailable > 0) {
-                            byte[] packetBytes = new byte[bytesAvailable];
-                            mmInputStream.read(packetBytes);
-                            for(int i=0;i<bytesAvailable;i++) {
-                                byte b = packetBytes[i];
-                                if(b == delimiter) {
-                                    byte[] encodedBytes = new byte[readBufferPosition];
-                                    System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
-                                    final String data = new String(encodedBytes, "US-ASCII");
-                                    readBufferPosition = 0;
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
 
-                                    handler.post(new Runnable() {
-                                        public void run() {
-                                            Log.d("mylog",data);
-
-                                            //myLabel.setText(data);
-                                        }
-                                    });
-                                }else {
-                                    readBuffer[readBufferPosition++] = b;
-                                }
-                            }
-                        }
-                    }catch (IOException ex) {
-                        stopWorker = true;
-                    }
-                }
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                m_Text = input.getText().toString();
+                database.execSQL("INSERT INTO User VALUES('"+m_Text+"');");
             }
         });
 
-        workerThread.start();
-    }
-
-    void sendData() throws IOException {
-        String msg = "HUUUUU";
-        msg += "\n";
-        //mmOutputStream.write(msg.getBytes());
-        mmOutputStream.write('A');
-        Log.d("mylog","data sent");
-
-        //  myLabel.setText("Data Sent");
-    }
-
-    private void pairDevice(BluetoothDevice device) {
-        try {
-            Method method = device.getClass().getMethod("createBond", (Class[]) null);
-            method.invoke(device, (Object[]) null);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    private void unpairDevice(BluetoothDevice device) {
-        try {
-            Method method = device.getClass().getMethod("removeBond", (Class[]) null);
-            method.invoke(device, (Object[]) null);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    private final BroadcastReceiver mPairReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-
-            if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
-                final int state        = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
-                final int prevState    = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, BluetoothDevice.ERROR);
-
-                if (state == BluetoothDevice.BOND_BONDED && prevState == BluetoothDevice.BOND_BONDING) {
-                    Toast.makeText(PairedDevicesListActivity.this,"Paired",Toast.LENGTH_SHORT).show();
-                } else if (state == BluetoothDevice.BOND_NONE && prevState == BluetoothDevice.BOND_BONDED){
-                    Toast.makeText(PairedDevicesListActivity.this,"Unpaired",Toast.LENGTH_SHORT).show();
-                }
-
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
             }
-        }
-    };
-    IntentFilter intent = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
-    // registerReceiver(mPairReceiver, intent);
+        });
+
+        builder.show();
+
+
+    }
 
     private void scanDevices() {
         CheckBluetoothState();
-//        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-//        registerReceiver(mBtReceiver, filter);
-
-        // Getting the Bluetooth adapter
-//        btAdapter = BluetoothAdapter.getDefaultAdapter();
-//        if(btAdapter != null) {
-//            btAdapter.startDiscovery();
-//            Toast.makeText(this, "Starting discovery...", Toast.LENGTH_SHORT).show();
-//        }
-//        else {
-//            Toast.makeText(this, "Bluetooth disabled or not available.", Toast.LENGTH_SHORT).show();
-//        }
     }
 
-    //    private final BroadcastReceiver mBtReceiver = new BroadcastReceiver() {
-//
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            String action = intent.getAction();
-//            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-//                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-//                mDeviceList.add(device.getName()+" # "+device.getAddress()); // get mac address concat device.getAddress()
-//                adapter.notifyDataSetChanged();
-//                // Log.d("mylog" ,device.getAddress() + ", " + device.getName()) ;
-//
-//            }
-//        }
-//    };
     private void CheckBluetoothState() {
         // Checks for the Bluetooth support and then makes sure it is turned on
         // If it isn't turned on, request to turn it on
         // List paired devices
+
+        Toast.makeText(this, "Listing paired devices", Toast.LENGTH_SHORT).show();
+
         if(btAdapter==null) {
             //textview1.append("\nBluetooth NOT supported. Aborting.");
             mDeviceList.add("Bluetooth NOT supported. Aborting.");

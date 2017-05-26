@@ -1,5 +1,6 @@
 package com.cs4492.cseuom.bluetoothdevicetracker;
 
+import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -206,6 +208,16 @@ public class AvailableDevicesList extends AppCompatActivity {
         // Getting the Bluetooth adapter
         btAdapter = BluetoothAdapter.getDefaultAdapter();
         if(btAdapter != null) {
+
+
+            //for android api above 6
+            /*
+            int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 1;
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
+            */
+
             btAdapter.startDiscovery();
             Toast.makeText(this, "Starting discovery...", Toast.LENGTH_SHORT).show();
         }

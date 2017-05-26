@@ -69,6 +69,7 @@ public class ConnectThread extends Thread {
         MyBluetoothService bds=new MyBluetoothService(handler);
         MyBluetoothService.ConnectedThread ct= bds.new ConnectedThread(mmSocket);
         ct.start();
+        ConnectedSockets.addToList(ct);
         ct.write("heshan".getBytes());
     }
 
