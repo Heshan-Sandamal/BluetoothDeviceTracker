@@ -70,7 +70,6 @@ public class AcceptThread extends Thread {
         MyBluetoothService bds = new MyBluetoothService(handler);
         MyBluetoothService.ConnectedThread ct = bds.new ConnectedThread(socket);
         ct.run();
-
     }
 
     // Closes the connect socket and causes the thread to finish.

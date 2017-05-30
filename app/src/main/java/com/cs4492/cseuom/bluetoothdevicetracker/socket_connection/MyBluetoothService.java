@@ -81,7 +81,6 @@ public class MyBluetoothService {
                     Log.d("received message",readMessage);
                     readMsg.sendToTarget();
 
-
                 } catch (IOException e) {
                     Log.d(TAG, "Input stream was disconnected", e);
                     break;
