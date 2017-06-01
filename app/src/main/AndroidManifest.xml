@@ -6,8 +6,9 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
     <!-- for android api above 6 -->
-    <!-- <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> -->
-    <!-- <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -55,7 +56,17 @@
         <service
             android:name=".scheduler.PingScheduler"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
+        <activity
+            android:name=".BluetoothVisibilityActivity"
+            android:label="@string/title_activity_bluetooth_visibility"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.cs4492.cseuom.bluetoothdevicetracker.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

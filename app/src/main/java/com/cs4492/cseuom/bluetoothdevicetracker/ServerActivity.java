@@ -1,6 +1,7 @@
 package com.cs4492.cseuom.bluetoothdevicetracker;
 
 import android.bluetooth.BluetoothAdapter;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.cs4492.cseuom.bluetoothdevicetracker.scheduler.PingScheduler;
 import com.cs4492.cseuom.bluetoothdevicetracker.socket_connection.AcceptThread;
 
 import java.io.IOException;
@@ -45,6 +47,7 @@ public class ServerActivity extends AppCompatActivity {
                 try {
                     new AcceptThread(btAdapter,ServerActivity.this.handler).start();
                     Toast.makeText(ServerActivity.this,"Started the thread",Toast.LENGTH_SHORT).show();
+                    startService(new Intent(ServerActivity.this,PingScheduler.class));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -57,6 +60,8 @@ public class ServerActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             Log.d("data", msg.obj.toString());
+           // String readMessage = new String(mmBuffer, 0, numBytes);
+            Toast.makeText(ServerActivity.this,msg.obj.toString(),Toast.LENGTH_LONG);
             super.handleMessage(msg);
         }
     };

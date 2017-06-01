@@ -66,7 +66,7 @@ public class ConnectThread extends Thread {
     }
 
     private void manageMyConnectedSocket(BluetoothSocket mmSocket, Handler handler) throws IOException {
-        MyBluetoothService bds=new MyBluetoothService(handler);
+        MyBluetoothService bds=new MyBluetoothService(handler,1);
         MyBluetoothService.ConnectedThread ct= bds.new ConnectedThread(mmSocket);
         ct.start();
         ConnectedSockets.addToList(ct);

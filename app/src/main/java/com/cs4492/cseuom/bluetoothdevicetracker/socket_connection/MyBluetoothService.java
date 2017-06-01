@@ -18,10 +18,12 @@ import java.io.OutputStream;
 public class MyBluetoothService {
     private static final String TAG = "MY_APP_DEBUG_TAG";
     private Handler mHandler; // handler that gets info from Bluetooth service
+    private int type;       //0-server,1-client
 
 
-    public MyBluetoothService(Handler mHandler) throws IOException {
+    public MyBluetoothService(Handler mHandler,int type) throws IOException {
         this.mHandler=mHandler;
+        this.type=type;
     }
 
     // Defines several constants used when transmitting messages between the
@@ -72,10 +74,15 @@ public class MyBluetoothService {
                     // Read from the InputStream.
                     numBytes = mmInStream.read(mmBuffer);
                     // Send the obtained bytes to the UI activity.
+
+                    String readMessage = new String(mmBuffer, 0, numBytes);
+                    if(type==1){
+                        this.write("received message by client".getBytes());
+                    }
+
                     Message readMsg = mHandler.obtainMessage(
                             MessageConstants.MESSAGE_READ, numBytes, -1,
-                            mmBuffer);
-                    String readMessage = new String(mmBuffer, 0, numBytes);
+                            readMessage);
                     Log.d("received message","reading information");
                     Log.d("received message",readMsg.toString());
                     Log.d("received message",readMessage);
