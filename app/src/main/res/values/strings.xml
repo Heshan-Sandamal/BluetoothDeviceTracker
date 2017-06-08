@@ -13,4 +13,12 @@
     <string name="title_activity_avialable_devices_list">AvialableDevicesList</string>
     <string name="title_activity_server">ServerActivity</string>
     <string name="title_activity_bluetooth_visibility">BluetoothVisibilityActivity</string>
+    <string name="not_connected_to_network">You are still not connected to any tracking network.Please follow these steps to get
+    started.First make sure your device is bluetooth enabled and paired with your other devices. Then if you need to create server then goto
+        start server activity and start the server. Then from other clients connect to the server using connect to server activity.
+    </string>
+
+    <string name="start_server_des">This will start a server socket where the other client can be connected to. Please make sure there will be
+        one server socket is enabled and all the other clients are get connected to it.
+    </string>
 </resources>

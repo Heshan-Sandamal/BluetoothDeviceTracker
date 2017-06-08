@@ -41,6 +41,7 @@ public class AcceptThread extends Thread {
         // Keep listening until exception occurs or a socket is returned.
         while (true) {
             try {
+                Log.d("waiting","waiting for conenction");
                 socket = mmServerSocket.accept();
             } catch (IOException e) {
                 Log.e(TAG, "Socket's accept() method failed", e);
@@ -51,16 +52,17 @@ public class AcceptThread extends Thread {
                 // A connection was accepted. Perform work associated with
                 // the connection in a separate thread.
                 try {
+                    Log.d("conn","connection");
                     manageMyConnectedSocket(socket,this.handler);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                try {
-                    mmServerSocket.close();
-                } catch (IOException e) {
-                    Log.e(TAG, e.getMessage());
-                }
-                break;
+//                try {
+//                    mmServerSocket.close();
+//                } catch (IOException e) {
+//                    Log.e(TAG, e.getMessage());
+//                }
+//                break;
             }
         }
     }
@@ -69,8 +71,8 @@ public class AcceptThread extends Thread {
         //new MyBluetoothService(socket);
         MyBluetoothService bds = new MyBluetoothService(handler,0);
         MyBluetoothService.ConnectedThread ct = bds.new ConnectedThread(socket);
-        ct.run();
-        ConnectedSockets.addToList(ct);
+        ConnectedSockets.addToConnectedThreadsList(ct);
+        ct.start();
 
     }
 
