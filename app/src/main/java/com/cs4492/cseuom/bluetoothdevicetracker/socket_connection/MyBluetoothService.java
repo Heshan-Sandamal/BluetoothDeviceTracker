@@ -127,5 +127,9 @@ public class MyBluetoothService {
                 Log.e(TAG, "Could not close the connect socket", e);
             }
         }
+
+        public BluetoothSocket getMmSocket() {
+            return mmSocket;
+        }
     }
 }

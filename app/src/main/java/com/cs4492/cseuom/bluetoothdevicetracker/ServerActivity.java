@@ -47,7 +47,7 @@ public class ServerActivity extends AppCompatActivity {
                 try {
                     new AcceptThread(btAdapter,ServerActivity.this.handler).start();
                     Toast.makeText(ServerActivity.this,"Started the thread",Toast.LENGTH_SHORT).show();
-                    startService(new Intent(ServerActivity.this,PingScheduler.class));
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

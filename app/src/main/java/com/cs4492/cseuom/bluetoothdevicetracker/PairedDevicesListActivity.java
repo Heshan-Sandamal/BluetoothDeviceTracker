@@ -63,7 +63,7 @@ public class PairedDevicesListActivity extends AppCompatActivity {
 
     @BindView(R.id.mylist)
     ListView list;
-    private SQLiteDatabase database;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,14 +76,14 @@ public class PairedDevicesListActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Paired Devices");
 
-        database = openOrCreateDatabase("BluetoothDeviceTracker",MODE_PRIVATE,null);
-        database.execSQL("CREATE TABLE IF NOT EXISTS User(userName VARCHAR);");
-
-        Cursor resultSet = database.rawQuery("Select * from User",null);
-
-        if(!resultSet.moveToFirst()){
-            showNameInputDialog();
-        }
+//        database = openOrCreateDatabase("BluetoothDeviceTracker",MODE_PRIVATE,null);
+//        database.execSQL("CREATE TABLE IF NOT EXISTS User(userName VARCHAR);");
+//
+//        Cursor resultSet = database.rawQuery("Select * from User",null);
+//
+//        if(!resultSet.moveToFirst()){
+//            showNameInputDialog();
+//        }
 
         adapter=new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_checked,
@@ -150,33 +150,33 @@ public class PairedDevicesListActivity extends AppCompatActivity {
         scanDevices();
     }
 
-    private void showNameInputDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Enter name for your device");
-
-        final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        builder.setView(input);
-
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                m_Text = input.getText().toString();
-                database.execSQL("INSERT INTO User VALUES('"+m_Text+"');");
-            }
-        });
-
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        builder.show();
-
-
-    }
+//    private void showNameInputDialog() {
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        builder.setTitle("Enter name for your device");
+//
+//        final EditText input = new EditText(this);
+//        input.setInputType(InputType.TYPE_CLASS_TEXT);
+//        builder.setView(input);
+//
+//        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                m_Text = input.getText().toString();
+//                database.execSQL("INSERT INTO User VALUES('"+m_Text+"');");
+//            }
+//        });
+//
+//        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                dialog.cancel();
+//            }
+//        });
+//
+//        builder.show();
+//
+//
+//    }
 
     private void scanDevices() {
         CheckBluetoothState();

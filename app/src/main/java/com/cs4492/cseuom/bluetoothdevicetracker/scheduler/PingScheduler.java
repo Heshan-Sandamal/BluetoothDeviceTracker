@@ -8,17 +8,31 @@ import android.util.Log;
 import java.util.Timer;
 
 public class PingScheduler extends Service {
+    private Timer time;
+
     public PingScheduler() {
-        Log.d("starting stss","tasks");
+
     }
 
     @Override
     public IBinder onBind(Intent intent) {
+
+        return null;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Log.d("starting stss","tasks");
         Log.d("starting st","task");
-        Timer time = new Timer(); // Instantiate Timer Object
+        time = new Timer(); // Instantiate Timer Object
 
         ScheduledTask st = new ScheduledTask(); // Instantiate SheduledTask class
         time.schedule(st, 0, 1000); // Create Repetitively task for everyt1 secs
-        return null;
+    }
+
+    @Override
+    public void onDestroy() {
+        this.time.cancel();
     }
 }

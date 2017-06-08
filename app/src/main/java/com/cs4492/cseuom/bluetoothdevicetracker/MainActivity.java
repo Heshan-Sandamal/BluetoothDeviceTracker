@@ -1,12 +1,19 @@
 package com.cs4492.cseuom.bluetoothdevicetracker;
 
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
+import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,12 +23,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import com.cs4492.cseuom.bluetoothdevicetracker.scheduler.PingScheduler;
 import com.cs4492.cseuom.bluetoothdevicetracker.socket_connection.ConnectedSockets;
 import com.cs4492.cseuom.bluetoothdevicetracker.socket_connection.MyBluetoothService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -31,6 +43,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private BluetoothAdapter BTAdapter;
 
+    private SQLiteDatabase database;
 
     public static int REQUEST_BLUETOOTH = 1;
 
@@ -38,7 +51,19 @@ public class MainActivity extends AppCompatActivity
     TextView textView2;
 
     @BindView(R.id.myButton)
-    Button myButton;
+    Button startServiceButton;
+
+    @BindView(R.id.stopService)
+    Button stopServiceButton;
+
+@BindView(R.id.refresh_connected_clients_button)
+    Button refreshConnectedClientsButton;
+
+    private String m_Text = "";
+
+    @BindView(R.id.connected_clients_list)
+    ListView connectedClientsList;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +86,15 @@ public class MainActivity extends AppCompatActivity
         if (!BTAdapter.isEnabled()) {
             Intent enableBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBT, REQUEST_BLUETOOTH);
+        }
+
+        database = openOrCreateDatabase("BluetoothDeviceTracker",MODE_PRIVATE,null);
+        database.execSQL("CREATE TABLE IF NOT EXISTS User(userName VARCHAR);");
+
+        Cursor resultSet = database.rawQuery("Select * from User",null);
+
+        if(!resultSet.moveToFirst()){
+            showNameInputDialog();
         }
         //ButterKnife.bind(this);
         ButterKnife.bind(this);
@@ -86,16 +120,86 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        myButton.setOnClickListener((new View.OnClickListener() {
+        startServiceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 List<MyBluetoothService.ConnectedThread> socketObjectsList = ConnectedSockets.getSocketObjectsList();
-                for (MyBluetoothService.ConnectedThread ob:socketObjectsList){
-                    ob.write("sending message".getBytes());
-                }
+                Log.d("dfd","message");
+                startService(new Intent(MainActivity.this,PingScheduler.class));
+//                for (MyBluetoothService.ConnectedThread ob:socketObjectsList){
+//                    Log.d("sending msg","message");
+//                    ob.write("sending message".getBytes());
+//                }
             }
-        }));
+        });
 
+        stopServiceButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopService(new Intent(MainActivity.this,PingScheduler.class));
+            }
+        });
+
+        refreshConnectedClientsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.this.setConnectedClientList();
+            }
+        });
+
+        setConnectedClientList();
+
+    }
+
+    private void setConnectedClientList() {
+        List<MyBluetoothService.ConnectedThread> socketObjectsList = ConnectedSockets.getSocketObjectsList();
+
+        ArrayList<String> mDeviceList = new ArrayList<String>();
+
+        for(MyBluetoothService.ConnectedThread connectedThread:socketObjectsList){
+            BluetoothDevice remoteDevice = connectedThread.getMmSocket().getRemoteDevice();
+            mDeviceList.add(remoteDevice.getAddress());
+
+        }
+
+        if(mDeviceList.size()==0){
+            mDeviceList.add("No Clients are connected");
+
+
+        }
+
+        ArrayAdapter adapter=new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1,
+                mDeviceList);
+
+        connectedClientsList.setAdapter(adapter);
+    }
+
+
+    private void showNameInputDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Enter name for your device");
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                m_Text = input.getText().toString();
+                database.execSQL("INSERT INTO User VALUES('"+m_Text+"');");
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
 
 
     }

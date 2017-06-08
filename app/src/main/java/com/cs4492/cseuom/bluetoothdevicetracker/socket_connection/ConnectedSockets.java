@@ -1,5 +1,7 @@
 package com.cs4492.cseuom.bluetoothdevicetracker.socket_connection;
 
+import android.bluetooth.BluetoothDevice;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,9 +14,10 @@ import java.util.Map;
 public class ConnectedSockets {
 
     private static List<MyBluetoothService.ConnectedThread> connectedThreads=new ArrayList<>();
+    private static List<BluetoothDevice> connectedDeviceList=new ArrayList<>();
 
 
-    public static void addToList(MyBluetoothService.ConnectedThread ct){
+    public static void addToConnectedThreadsList(MyBluetoothService.ConnectedThread ct){
         connectedThreads.add(ct);
     }
 
@@ -22,4 +25,11 @@ public class ConnectedSockets {
         return connectedThreads;
     }
 
+    public static void addToConnectedDevicesList(BluetoothDevice device){
+        connectedDeviceList.add(device);
+    }
+
+    public static List<BluetoothDevice> getConnectedDeviceList() {
+        return connectedDeviceList;
+    }
 }
