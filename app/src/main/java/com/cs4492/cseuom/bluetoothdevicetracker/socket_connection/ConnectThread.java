@@ -4,7 +4,10 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
+
+import com.cs4492.cseuom.bluetoothdevicetracker.protocol.MessageConstants;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -73,6 +76,10 @@ public class ConnectThread extends Thread {
         MyBluetoothService.ConnectedThread ct= bds.new ConnectedThread(mmSocket);
         ct.start();
         ct.write("heshan".getBytes());
+
+        Message writeErrorMsg =
+                this.handler.obtainMessage(0, 1024, -1,
+                        MessageConstants.CONNECTED_CLIENT);
 
     }
 

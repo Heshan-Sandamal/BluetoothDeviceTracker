@@ -89,9 +89,6 @@ public class MyBluetoothService {
                     Message readMsg = mHandler.obtainMessage(
                             MessageConstants.MESSAGE_READ, numBytes, -1,
                             readMessage);
-                    Log.d("received message","reading information");
-                    Log.d("received message",readMsg.toString());
-                    Log.d("received message",readMessage);
                     readMsg.sendToTarget();
 
                     Intent intent = new Intent("com.cs4492.cseuom.bluetoothdevicetracker");
@@ -106,7 +103,7 @@ public class MyBluetoothService {
         }
 
         // Call this from the main activity to send data to the remote device.
-        public void write(byte[] bytes) {
+        public void write(byte[] bytes) throws IOException {
             try {
                 mmOutStream.write(bytes);
                 mmOutStream.flush();
@@ -116,7 +113,7 @@ public class MyBluetoothService {
                         MessageConstants.MESSAGE_WRITE, -1, -1, mmBuffer);
                 writtenMsg.sendToTarget();
             } catch (IOException e) {
-                Log.e(TAG, "Error occurred when sending data", e);
+                Log.d("Error",e.getMessage());
 
                 // Send a failure message back to the activity.
                 Message writeErrorMsg =
@@ -125,7 +122,8 @@ public class MyBluetoothService {
                 bundle.putString("toast",
                         "Couldn't send data to the other device");
                 writeErrorMsg.setData(bundle);
-                mHandler.sendMessage(writeErrorMsg);
+                writeErrorMsg.sendToTarget();
+                throw e;
             }
         }
 

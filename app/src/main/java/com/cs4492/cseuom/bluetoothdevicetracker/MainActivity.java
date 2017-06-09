@@ -35,6 +35,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cs4492.cseuom.bluetoothdevicetracker.protocol.MessageConstants;
 import com.cs4492.cseuom.bluetoothdevicetracker.scheduler.PingScheduler;
 import com.cs4492.cseuom.bluetoothdevicetracker.socket_connection.AcceptThread;
 import com.cs4492.cseuom.bluetoothdevicetracker.socket_connection.ConnectedSockets;
@@ -70,13 +71,16 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.device_address_text)
     TextView deviceAddressTextBox;
 
-@BindView(R.id.refresh_connected_clients_button)
+    @BindView(R.id.refresh_connected_clients_button)
     Button refreshConnectedClientsButton;
 
     private String m_Text = "";
 
     @BindView(R.id.connected_clients_list)
     ListView connectedClientsList;
+
+    @BindView(R.id.clientConnectedListLabel)
+    TextView clientConnectedListLabel;
 
     BroadcastReceiver myReceiver = null;
     Boolean myReceiverIsRegistered = false;
@@ -106,19 +110,19 @@ public class MainActivity extends AppCompatActivity
         if (!BTAdapter.isEnabled()) {
             Intent enableBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBT, REQUEST_BLUETOOTH);
-        }else{
-            deviceAddressTextBox.setText(BTAdapter.getName()+ BTAdapter.getName());
+        } else {
+            deviceAddressTextBox.setText(BTAdapter.getName() + BTAdapter.getName());
         }
 
-        database = openOrCreateDatabase("BluetoothDeviceTracker",MODE_PRIVATE,null);
+        database = openOrCreateDatabase("BluetoothDeviceTracker", MODE_PRIVATE, null);
         database.execSQL("CREATE TABLE IF NOT EXISTS User(userName VARCHAR);");
 
-        Cursor resultSet = database.rawQuery("Select userName from User",null);
+        Cursor resultSet = database.rawQuery("Select userName from User", null);
 
 
-        if(resultSet.moveToFirst()){
+        if (resultSet.moveToFirst()) {
             deviceNameTextBox.setText(resultSet.getString(0));
-        }else{
+        } else {
             showNameInputDialog();
         }
 
@@ -151,8 +155,8 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 List<MyBluetoothService.ConnectedThread> socketObjectsList = ConnectedSockets.getSocketObjectsList();
-                Log.d("dfd","message");
-                startService(new Intent(MainActivity.this,PingScheduler.class));
+                Log.d("dfd", "message");
+                startService(new Intent(MainActivity.this, PingScheduler.class));
 //                for (MyBluetoothService.ConnectedThread ob:socketObjectsList){
 //                    Log.d("sending msg","message");
 //                    ob.write("sending message".getBytes());
@@ -163,7 +167,7 @@ public class MainActivity extends AppCompatActivity
         stopServiceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                stopService(new Intent(MainActivity.this,PingScheduler.class));
+                stopService(new Intent(MainActivity.this, PingScheduler.class));
             }
         });
 
@@ -175,17 +179,17 @@ public class MainActivity extends AppCompatActivity
         });
 
         setConnectedClientList();
-        myReceiver= new BroadcastReceiver(){
+        myReceiver = new BroadcastReceiver() {
 
             @Override
             public void onReceive(Context context, Intent intent) {
                 System.out.print("jesddddddddddddddddddddddddddddddddddddddddddddd");
-                Log.d("broadcase","broadcast");
+                Log.d("broadcase", "broadcast");
             }
         };
 
         registerReceiver(myReceiver, new IntentFilter("com.cs4492.cseuom.bluetoothdevicetracker"));
-        Toast.makeText(this,"Registered the broadcast listener",Toast.LENGTH_SHORT);
+        Toast.makeText(this, "Registered the broadcast listener", Toast.LENGTH_SHORT);
         myReceiverIsRegistered = true;
 
     }
@@ -195,20 +199,21 @@ public class MainActivity extends AppCompatActivity
 
         ArrayList<String> mDeviceList = new ArrayList<String>();
 
-        for(MyBluetoothService.ConnectedThread connectedThread:socketObjectsList){
+        for (MyBluetoothService.ConnectedThread connectedThread : socketObjectsList) {
             BluetoothDevice remoteDevice = connectedThread.getMmSocket().getRemoteDevice();
-            mDeviceList.add(remoteDevice.getName()+remoteDevice.getAddress());
+            mDeviceList.add(remoteDevice.getName() + remoteDevice.getAddress());
 
         }
 
-        if(mDeviceList.size()==0){
-            mDeviceList.add("No Clients are connected");
-
-
+        if (mDeviceList.isEmpty()) {
+            textView2.setVisibility(View.VISIBLE);
+        } else {
+            textView2.setVisibility(View.INVISIBLE);
         }
 
-        ArrayAdapter adapter=new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1,
+
+        ArrayAdapter adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_checked,
                 mDeviceList);
 
         connectedClientsList.setAdapter(adapter);
@@ -227,7 +232,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 m_Text = input.getText().toString();
-                database.execSQL("INSERT INTO User VALUES('"+m_Text+"');");
+                database.execSQL("INSERT INTO User VALUES('" + m_Text + "');");
             }
         });
 
@@ -257,7 +262,7 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         if (!myReceiverIsRegistered) {
             registerReceiver(myReceiver, new IntentFilter("com.cs4492.cseuom.bluetoothdevicetracker"));
-            Toast.makeText(this,"Registered the broadcast listener",Toast.LENGTH_LONG);
+            Toast.makeText(this, "Registered the broadcast listener", Toast.LENGTH_LONG);
             myReceiverIsRegistered = true;
         }
     }
@@ -310,7 +315,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_slideshow) {
 //            startActivity(new Intent(MainActivity.this, ServerActivity.class));
             try {
-                new AcceptThread(BTAdapter, MainActivity.this.handler,getApplicationContext()).start();
+                new AcceptThread(BTAdapter, MainActivity.this.handler, getApplicationContext()).start();
                 Toast.makeText(MainActivity.this, "Started the thread", Toast.LENGTH_SHORT).show();
 
             } catch (IOException e) {
@@ -333,10 +338,20 @@ public class MainActivity extends AppCompatActivity
     private final Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            Log.d("check incoming message","dataaaaaaaaaaaaaaa");
-            Log.d("data", msg.obj.toString());
-            // String readMessage = new String(mmBuffer, 0, numBytes);
-            deviceNameTextBox.setText(msg.obj.toString());
+            MainActivity.this.setConnectedClientList();
+            try {
+                Log.d("data", msg.obj.toString());
+
+                if (msg.obj.toString().equals(MessageConstants.CONNECTED_CLIENT)) {
+                    MainActivity.this.startServiceButton.setEnabled(false);
+                    MainActivity.this.stopServiceButton.setEnabled(false);
+                    MainActivity.this.clientConnectedListLabel.setText("Connected Server");
+                }
+
+            } catch (Exception e) {
+                Log.e("error", "error message");
+            }
+
             Toast.makeText(MainActivity.this, "Message receivedd", Toast.LENGTH_LONG);
 
             //super.handleMessage(msg);

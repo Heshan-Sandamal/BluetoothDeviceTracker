@@ -5,6 +5,7 @@ import android.util.Log;
 import com.cs4492.cseuom.bluetoothdevicetracker.socket_connection.ConnectedSockets;
 import com.cs4492.cseuom.bluetoothdevicetracker.socket_connection.MyBluetoothService;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.TimerTask;
@@ -14,6 +15,9 @@ import java.util.TimerTask;
  */
 
 public class ScheduledTask extends TimerTask {
+
+
+
     @Override
     public void run() {
 
@@ -21,7 +25,14 @@ public class ScheduledTask extends TimerTask {
 
         Log.d("scheduler is running",new Date().toString());
         for (MyBluetoothService.ConnectedThread ob:socketObjectsList){
-            ob.write(new Date().toString().getBytes());
+
+            try {
+                ob.write(new Date().toString().getBytes());
+            }catch (Exception e){
+                Log.e("error in writing",ob.getName());
+                ConnectedSockets.getSocketObjectsList().remove(ob);
+                //this.cancel();
+            }
         }
     }
 }
