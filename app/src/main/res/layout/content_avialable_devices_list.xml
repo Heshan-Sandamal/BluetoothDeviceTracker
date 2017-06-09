@@ -6,33 +6,32 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.cs4492.cseuom.bluetoothdevicetracker.AvailableDevicesList"
-    tools:showIn="@layout/activity_avialable_devices_list">
+    tools:showIn="@layout/activity_avialable_devices_list"
+    tools:layout_editor_absoluteY="81dp"
+    tools:layout_editor_absoluteX="0dp">
+
+    <ListView
+        android:id="@+id/avialbleDeviceslist"
+        android:layout_width="383dp"
+        android:layout_height="541dp"
+        android:clickable="true"
+        android:drawSelectorOnTop="false"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/addBtnavailable"
+        app:layout_constraintVertical_bias="0.461"
+        app:layout_constraintLeft_toLeftOf="parent" />
 
     <Button
         android:id="@+id/addBtnavailable"
         style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_width="230dp"
-        android:layout_height="46dp"
-        android:layout_marginTop="0dp"
+        android:layout_width="395dp"
+        android:layout_height="0dp"
         android:text="Scan"
-        app:layout_constraintHorizontal_bias="0.509"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_editor_absoluteX="76dp" />
+        app:layout_constraintBottom_toBottomOf="parent" />
 
-    <ListView
-        android:id="@+id/avialbleDeviceslist"
-        android:layout_width="0dp"
-        android:layout_height="511dp"
-        android:clickable="true"
-        android:drawSelectorOnTop="false"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addBtnavailable"
-        app:layout_constraintVertical_bias="0.0"
-        tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintRight_creator="1" />
+
 
 </android.support.constraint.ConstraintLayout>
