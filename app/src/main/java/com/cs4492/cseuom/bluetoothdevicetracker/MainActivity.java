@@ -56,6 +56,12 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.stopService)
     Button stopServiceButton;
 
+    @BindView(R.id.device_name_textbox)
+    TextView deviceNameTextBox;
+
+    @BindView(R.id.device_address_text)
+    TextView deviceAddressTextBox;
+
 @BindView(R.id.refresh_connected_clients_button)
     Button refreshConnectedClientsButton;
 
@@ -71,6 +77,9 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         BTAdapter = BluetoothAdapter.getDefaultAdapter();
         // Phone does not support Bluetooth so let the user know and exit.
+
+        ButterKnife.bind(this);
+
         if (BTAdapter == null) {
             new AlertDialog.Builder(this)
                     .setTitle("Not compatible")
@@ -86,18 +95,25 @@ public class MainActivity extends AppCompatActivity
         if (!BTAdapter.isEnabled()) {
             Intent enableBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBT, REQUEST_BLUETOOTH);
+        }else{
+            deviceAddressTextBox.setText(BTAdapter.getName()+ BTAdapter.getName());
         }
 
         database = openOrCreateDatabase("BluetoothDeviceTracker",MODE_PRIVATE,null);
         database.execSQL("CREATE TABLE IF NOT EXISTS User(userName VARCHAR);");
 
-        Cursor resultSet = database.rawQuery("Select * from User",null);
+        Cursor resultSet = database.rawQuery("Select userName from User",null);
 
-        if(!resultSet.moveToFirst()){
+
+        if(resultSet.moveToFirst()){
+            deviceNameTextBox.setText(resultSet.getString(0));
+        }else{
             showNameInputDialog();
         }
+
+
         //ButterKnife.bind(this);
-        ButterKnife.bind(this);
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

@@ -22,8 +22,53 @@
         android:background="#c0c0c0"
         android:visibility="invisible"
         app:layout_constraintLeft_toLeftOf="parent"
-        tools:layout_editor_absoluteY="0dp"
-        android:layout_marginTop="10dp"/>
+        tools:layout_editor_absoluteY="78dp"
+        android:layout_marginLeft="16dp" />
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="102dp"
+        android:layout_height="27dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="-4dp"
+        android:text="Device Name"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/device_name_textbox"
+        android:layout_width="241dp"
+        android:layout_height="27dp"
+        android:layout_marginTop="-11dp"
+        android:text="TextView"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="122dp"
+        app:layout_constraintLeft_toLeftOf="@+id/textView10" />
+
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="102dp"
+        android:layout_height="27dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="43dp"
+        android:text="Device Address"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView10"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/device_address_text"
+        android:layout_width="241dp"
+        android:layout_height="26dp"
+        android:text="TextView"
+        android:layout_marginRight="16dp"
+        app:layout_constraintTop_toBottomOf="@id/device_name_textbox"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="122dp"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintLeft_toLeftOf="@+id/textView11" />
+
+
 
     <EditText
         android:id="@+id/editText"
@@ -34,10 +79,23 @@
         android:text="Connected Clients List"
         android:textSize="24sp"
         android:textStyle="bold"
-        tools:layout_editor_absoluteY="27dp"
-        android:layout_marginLeft="-4dp"
+        android:layout_marginLeft="0dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/view"/>
+        app:layout_constraintTop_toBottomOf="@id/textView11"
+        android:layout_marginTop="0dp" />
+
+    <Button
+        android:id="@+id/refresh_connected_clients_button"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="61dp"
+        android:layout_height="48dp"
+        android:text="Refresh"
+        android:textSize="8sp"
+        app:layout_constraintLeft_toRightOf="@id/editText"
+        app:layout_constraintTop_toBottomOf="@id/device_address_text"
+        tools:layout_editor_absoluteY="82dp"
+        android:layout_marginLeft="-16dp" />
+
 
     <ListView
     android:id="@+id/connected_clients_list"
@@ -52,7 +110,8 @@
     app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="8dp"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.481" />
 
     <Button
         android:id="@+id/myButton"
@@ -66,9 +125,9 @@
         android:text="Start Tracking"
         android:textAlignment="center"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginLeft="1dp"
+        android:layout_marginLeft="0dp"
         app:layout_constraintTop_toBottomOf="@id/connected_clients_list"
-        android:layout_marginTop="0dp" />
+        android:layout_marginTop="-20dp" />
 
     <Button
         android:id="@+id/stopService"
@@ -78,8 +137,8 @@
         android:text="STOP TRACKING"
         app:layout_constraintLeft_toRightOf="@id/myButton"
         app:layout_constraintTop_toBottomOf="@id/connected_clients_list"
-        tools:layout_editor_absoluteX="211dp"
-        tools:layout_editor_absoluteY="195dp" />
+        android:layout_marginLeft="-15dp"
+        android:layout_marginTop="-20dp" />
 
     <TextView
         android:id="@+id/textView2"
@@ -87,24 +146,16 @@
         android:layout_height="99dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="-6dp"
         android:text="@string/not_connected_to_network"
         android:textAlignment="textStart"
         android:textSize="14dp"
         android:textStyle="bold"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/stopService"
-        tools:layout_editor_absoluteY="275dp" />
+        app:layout_constraintTop_toBottomOf="@id/stopService" />
 
-    <Button
-        android:id="@+id/refresh_connected_clients_button"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_width="61dp"
-        android:layout_height="48dp"
-        android:text="Refresh"
-        android:textSize="8sp"
-        app:layout_constraintLeft_toRightOf="@id/editText"
-        tools:layout_editor_absoluteX="322dp"
-        tools:layout_editor_absoluteY="4dp" />
+
+
+
 </android.support.constraint.ConstraintLayout>
