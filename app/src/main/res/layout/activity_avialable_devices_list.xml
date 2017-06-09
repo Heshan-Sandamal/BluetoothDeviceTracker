@@ -20,7 +20,8 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_avialable_devices_list" />
+    <include layout="@layout/content_avialable_devices_list"
+        android:layout_height="405dp" />
 
 
 </android.support.design.widget.CoordinatorLayout>
