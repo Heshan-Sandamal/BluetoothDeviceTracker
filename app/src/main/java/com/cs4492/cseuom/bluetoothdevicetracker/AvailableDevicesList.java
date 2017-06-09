@@ -89,7 +89,7 @@ public class AvailableDevicesList extends AppCompatActivity {
             }
         });
         adapter=new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_checked,
+                android.R.layout.simple_list_item_single_choice,
                 mDeviceList);
         list.setAdapter(adapter);
         scanbutton = (Button) findViewById(R.id.addBtnavailable);
@@ -110,7 +110,6 @@ public class AvailableDevicesList extends AppCompatActivity {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
                 String  itemValue = String.valueOf(((TextView) view).getText());
                 char symbol= itemValue.charAt(itemValue.length() - 19) ;
                 //    Log.d("mylog" , String.valueOf(symbol)) ;

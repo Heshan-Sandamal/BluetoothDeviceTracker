@@ -25,6 +25,10 @@ public class ConnectedSockets {
         return connectedThreads;
     }
 
+    public static void clearConnectedThreadsList(){
+        connectedThreads.clear();
+    }
+
     public static void addToConnectedDevicesList(BluetoothDevice device){
         connectedDeviceList.add(device);
     }

@@ -9,8 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -35,7 +33,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cs4492.cseuom.bluetoothdevicetracker.protocol.MessageConstants;
+import com.cs4492.cseuom.bluetoothdevicetracker.protocol.AppMessageConstants;
 import com.cs4492.cseuom.bluetoothdevicetracker.scheduler.PingScheduler;
 import com.cs4492.cseuom.bluetoothdevicetracker.socket_connection.AcceptThread;
 import com.cs4492.cseuom.bluetoothdevicetracker.socket_connection.ConnectedSockets;
@@ -260,10 +258,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        if (!myReceiverIsRegistered) {
-            registerReceiver(myReceiver, new IntentFilter("com.cs4492.cseuom.bluetoothdevicetracker"));
-            Toast.makeText(this, "Registered the broadcast listener", Toast.LENGTH_LONG);
-            myReceiverIsRegistered = true;
+        if (AppMessageConstants.CONNECTED_CLIENT.equals(AppMessageConstants.hostType)) {
+            setConnectedClientList();
+            MainActivity.this.startServiceButton.setEnabled(false);
+            MainActivity.this.stopServiceButton.setEnabled(false);
+            MainActivity.this.clientConnectedListLabel.setText("Connected Server");
         }
     }
 
@@ -339,13 +338,12 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void handleMessage(Message msg) {
             MainActivity.this.setConnectedClientList();
+            String data=msg.obj.toString();
             try {
                 Log.d("data", msg.obj.toString());
 
-                if (msg.obj.toString().equals(MessageConstants.CONNECTED_CLIENT)) {
-                    MainActivity.this.startServiceButton.setEnabled(false);
-                    MainActivity.this.stopServiceButton.setEnabled(false);
-                    MainActivity.this.clientConnectedListLabel.setText("Connected Server");
+                if(AppMessageConstants.MASTER_DISCONNECTED.equals(data)){
+                    ConnectedSockets.clearConnectedThreadsList();
                 }
 
             } catch (Exception e) {

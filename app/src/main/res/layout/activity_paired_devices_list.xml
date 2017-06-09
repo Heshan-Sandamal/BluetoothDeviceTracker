@@ -30,6 +30,6 @@
 
     <include
         layout="@layout/content_paired_devices_list"
-        android:layout_height="398dp" />
+        android:layout_height="500dp" />
 
 </android.support.design.widget.CoordinatorLayout>

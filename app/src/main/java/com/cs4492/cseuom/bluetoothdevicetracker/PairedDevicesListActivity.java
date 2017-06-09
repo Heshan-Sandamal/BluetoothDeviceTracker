@@ -86,7 +86,7 @@ public class PairedDevicesListActivity extends AppCompatActivity {
 //        }
 
         adapter=new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_checked,
+                android.R.layout.simple_list_item_single_choice,
                 mDeviceList);
 
 
@@ -127,6 +127,7 @@ public class PairedDevicesListActivity extends AppCompatActivity {
                     ConnectThread connectThread = new ConnectThread(bluetoothDevice,PairedDevicesListActivity.this.handler,getApplicationContext());
                     connectThread.start();
                     Toast.makeText(PairedDevicesListActivity.this,"Connected to the thread",Toast.LENGTH_SHORT).show();
+                    finish();
 
 
                     // Initiate a connection request in a separate thread
@@ -196,14 +197,6 @@ public class PairedDevicesListActivity extends AppCompatActivity {
             return;
         } else {
             if (btAdapter.isEnabled()) {
-                // textview1.append("\nBluetooth is enabled...");
-                mDeviceList.add("Bluetooth is enabled...");
-                adapter.notifyDataSetChanged();
-                // Listing paired devices
-                //textview1.append("\nPaired Devices are:");
-                mDeviceList.add("Paired Devices are:");
-                adapter.notifyDataSetChanged();
-
                 Set<BluetoothDevice> devices = btAdapter.getBondedDevices();
                 for (BluetoothDevice device : devices) {
                     // textview1.append("\n  Device: " + device.getName() + ", " + device);

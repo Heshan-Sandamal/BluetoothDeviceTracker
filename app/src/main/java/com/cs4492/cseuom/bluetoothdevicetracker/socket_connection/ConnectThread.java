@@ -4,10 +4,9 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 
-import com.cs4492.cseuom.bluetoothdevicetracker.protocol.MessageConstants;
+import com.cs4492.cseuom.bluetoothdevicetracker.protocol.AppMessageConstants;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -31,7 +30,8 @@ public class ConnectThread extends Thread {
         BluetoothSocket tmp = null;
         mmDevice = device;
         this.applicationContext=applicationContext;
-        this.MY_UUID=device.getUuids()[device.getUuids().length-1].getUuid();
+//        this.MY_UUID=device.getUuids()[device.getUuids().length-1].getUuid();
+        this.MY_UUID=new UUID(8333, 3242);
 
         try {
             // Get a BluetoothSocket to connect with the given BluetoothDevice.
@@ -76,10 +76,10 @@ public class ConnectThread extends Thread {
         MyBluetoothService.ConnectedThread ct= bds.new ConnectedThread(mmSocket);
         ct.start();
         ct.write("heshan".getBytes());
+        Log.d("writing message","wrinting meeeeeeeeeeeeee");
 
-        Message writeErrorMsg =
-                this.handler.obtainMessage(0, 1024, -1,
-                        MessageConstants.CONNECTED_CLIENT);
+        AppMessageConstants.hostType= AppMessageConstants.CONNECTED_CLIENT;
+        ConnectedSockets.addToConnectedThreadsList(ct);
 
     }
 

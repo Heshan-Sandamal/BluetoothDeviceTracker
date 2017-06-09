@@ -10,6 +10,8 @@ import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.cs4492.cseuom.bluetoothdevicetracker.protocol.AppMessageConstants;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -82,21 +84,22 @@ public class MyBluetoothService {
                     // Send the obtained bytes to the UI activity.
 
                     String readMessage = new String(mmBuffer, 0, numBytes);
-                    if(type==1){
-                        this.write(("received@"+new Date().toString()).getBytes());
-                    }
-
                     Message readMsg = mHandler.obtainMessage(
                             MessageConstants.MESSAGE_READ, numBytes, -1,
                             readMessage);
                     readMsg.sendToTarget();
 
-                    Intent intent = new Intent("com.cs4492.cseuom.bluetoothdevicetracker");
-                    intent.putExtra("value","test");
-                    LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent);
+                    if(type==1){
+                        this.write(("received@"+new Date().toString()).getBytes());
+                    }
+
 
                 } catch (IOException e) {
                     Log.d(TAG, "Input stream was disconnected", e);
+                    Message errorMessage = mHandler.obtainMessage(
+                            MessageConstants.MESSAGE_READ, 1024, -1,
+                            AppMessageConstants.MASTER_DISCONNECTED);
+                    errorMessage.sendToTarget();
                     break;
                 }
             }
