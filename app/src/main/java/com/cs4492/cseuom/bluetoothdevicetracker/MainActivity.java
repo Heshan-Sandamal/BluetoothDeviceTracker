@@ -2,12 +2,17 @@ package com.cs4492.cseuom.bluetoothdevicetracker;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -28,19 +33,22 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
+import com.cs4492.cseuom.bluetoothdevicetracker.check_moving.deviceMoving;
 import com.cs4492.cseuom.bluetoothdevicetracker.scheduler.PingScheduler;
 import com.cs4492.cseuom.bluetoothdevicetracker.socket_connection.ConnectedSockets;
 import com.cs4492.cseuom.bluetoothdevicetracker.socket_connection.MyBluetoothService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener{
     private BluetoothAdapter BTAdapter;
 
     private SQLiteDatabase database;
@@ -65,10 +73,12 @@ public class MainActivity extends AppCompatActivity
     ListView connectedClientsList;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         BTAdapter = BluetoothAdapter.getDefaultAdapter();
         // Phone does not support Bluetooth so let the user know and exit.
         if (BTAdapter == null) {
@@ -150,6 +160,8 @@ public class MainActivity extends AppCompatActivity
         setConnectedClientList();
 
     }
+
+
 
     private void setConnectedClientList() {
         List<MyBluetoothService.ConnectedThread> socketObjectsList = ConnectedSockets.getSocketObjectsList();
