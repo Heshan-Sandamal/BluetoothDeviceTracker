@@ -23,6 +23,7 @@ public class PingScheduler extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        
         Log.d("starting stss","tasks");
         Log.d("starting st","task");
         time = new Timer(); // Instantiate Timer Object

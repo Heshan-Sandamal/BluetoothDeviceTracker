@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -23,6 +24,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,6 +58,9 @@ public class AvailableDevicesList extends AppCompatActivity {
     private int readBufferPosition;
     private byte readBuffer [] ;
     private Thread workerThread ;
+    Button Button1;
+    TextView textTimer ;
+    int time ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,8 +73,21 @@ public class AvailableDevicesList extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Available Devices");
         ButterKnife.bind(this);
+        Button1=(Button)findViewById(R.id.button);
+
+        Button1.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+
+                    Intent discoverableIntent =
+                            new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+                    discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+                    startActivity(discoverableIntent);
 
 
+            }
+        });
         adapter=new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_checked,
                 mDeviceList);
@@ -116,6 +134,10 @@ public class AvailableDevicesList extends AppCompatActivity {
             }
         });
 
+    }
+
+    public String checkDigit(int number) {
+        return number <= 9 ? "0" + number : String.valueOf(number);
     }
     void openBT(BluetoothDevice mmDevice) throws IOException {
         UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb"); //Standard                //SerialPortService ID
