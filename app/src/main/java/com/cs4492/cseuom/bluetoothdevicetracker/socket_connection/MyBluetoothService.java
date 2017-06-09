@@ -13,6 +13,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Date;
 
 /**
  * Created by Heshan Sandamal on 5/20/2017.
@@ -82,7 +83,7 @@ public class MyBluetoothService {
 
                     String readMessage = new String(mmBuffer, 0, numBytes);
                     if(type==1){
-                        this.write("received message by client".getBytes());
+                        this.write(("received@"+new Date().toString()).getBytes());
                     }
 
                     Message readMsg = mHandler.obtainMessage(
@@ -91,7 +92,7 @@ public class MyBluetoothService {
                     Log.d("received message","reading information");
                     Log.d("received message",readMsg.toString());
                     Log.d("received message",readMessage);
-                    //readMsg.sendToTarget();
+                    readMsg.sendToTarget();
 
                     Intent intent = new Intent("com.cs4492.cseuom.bluetoothdevicetracker");
                     intent.putExtra("value","test");
