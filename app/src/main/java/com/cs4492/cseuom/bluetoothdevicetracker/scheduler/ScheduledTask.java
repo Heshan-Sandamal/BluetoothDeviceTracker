@@ -21,7 +21,7 @@ public class ScheduledTask extends TimerTask {
 
         Log.d("scheduler is running",new Date().toString());
         for (MyBluetoothService.ConnectedThread ob:socketObjectsList){
-            ob.write("sending message".getBytes());
+            ob.write(new Date().toString().getBytes());
         }
     }
 }

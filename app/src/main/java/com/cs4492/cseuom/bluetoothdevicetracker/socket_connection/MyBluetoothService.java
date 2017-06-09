@@ -2,9 +2,12 @@ package com.cs4492.cseuom.bluetoothdevicetracker.socket_connection;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.io.IOException;
@@ -17,13 +20,15 @@ import java.io.OutputStream;
 
 public class MyBluetoothService {
     private static final String TAG = "MY_APP_DEBUG_TAG";
+    private final Context applicationContext;
     private Handler mHandler; // handler that gets info from Bluetooth service
     private int type;       //0-server,1-client
 
 
-    public MyBluetoothService(Handler mHandler,int type) throws IOException {
+    public MyBluetoothService(Handler mHandler, Context applicationContext, int type) throws IOException {
         this.mHandler=mHandler;
         this.type=type;
+        this.applicationContext=applicationContext;
     }
 
     // Defines several constants used when transmitting messages between the
@@ -86,7 +91,11 @@ public class MyBluetoothService {
                     Log.d("received message","reading information");
                     Log.d("received message",readMsg.toString());
                     Log.d("received message",readMessage);
-                    readMsg.sendToTarget();
+                    //readMsg.sendToTarget();
+
+                    Intent intent = new Intent("com.cs4492.cseuom.bluetoothdevicetracker");
+                    intent.putExtra("value","test");
+                    LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent);
 
                 } catch (IOException e) {
                     Log.d(TAG, "Input stream was disconnected", e);

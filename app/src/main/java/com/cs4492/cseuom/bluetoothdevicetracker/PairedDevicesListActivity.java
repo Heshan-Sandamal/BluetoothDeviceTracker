@@ -124,7 +124,7 @@ public class PairedDevicesListActivity extends AppCompatActivity {
                         Log.d("UUID",pl.getUuid().toString());
                     }
 
-                    ConnectThread connectThread = new ConnectThread(bluetoothDevice,PairedDevicesListActivity.this.handler);
+                    ConnectThread connectThread = new ConnectThread(bluetoothDevice,PairedDevicesListActivity.this.handler,getApplicationContext());
                     connectThread.start();
                     Toast.makeText(PairedDevicesListActivity.this,"Connected to the thread",Toast.LENGTH_SHORT).show();
 

@@ -34,6 +34,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.cs4492.cseuom.bluetoothdevicetracker.MainActivity" />
         </activity>
+
         <activity
             android:name=".AvailableDevicesList"
             android:label="@string/title_activity_avialable_devices_list"

@@ -2,13 +2,18 @@ package com.cs4492.cseuom.bluetoothdevicetracker;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -28,11 +33,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cs4492.cseuom.bluetoothdevicetracker.scheduler.PingScheduler;
+import com.cs4492.cseuom.bluetoothdevicetracker.socket_connection.AcceptThread;
 import com.cs4492.cseuom.bluetoothdevicetracker.socket_connection.ConnectedSockets;
 import com.cs4492.cseuom.bluetoothdevicetracker.socket_connection.MyBluetoothService;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,6 +77,9 @@ public class MainActivity extends AppCompatActivity
 
     @BindView(R.id.connected_clients_list)
     ListView connectedClientsList;
+
+    BroadcastReceiver myReceiver = null;
+    Boolean myReceiverIsRegistered = false;
 
 
     @Override
@@ -164,6 +175,18 @@ public class MainActivity extends AppCompatActivity
         });
 
         setConnectedClientList();
+        myReceiver= new BroadcastReceiver(){
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                System.out.print("jesddddddddddddddddddddddddddddddddddddddddddddd");
+                Log.d("broadcase","broadcast");
+            }
+        };
+
+        registerReceiver(myReceiver, new IntentFilter("com.cs4492.cseuom.bluetoothdevicetracker"));
+        Toast.makeText(this,"Registered the broadcast listener",Toast.LENGTH_SHORT);
+        myReceiverIsRegistered = true;
 
     }
 
@@ -174,7 +197,7 @@ public class MainActivity extends AppCompatActivity
 
         for(MyBluetoothService.ConnectedThread connectedThread:socketObjectsList){
             BluetoothDevice remoteDevice = connectedThread.getMmSocket().getRemoteDevice();
-            mDeviceList.add(remoteDevice.getAddress());
+            mDeviceList.add(remoteDevice.getName()+remoteDevice.getAddress());
 
         }
 
@@ -221,6 +244,25 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        if (myReceiverIsRegistered) {
+            unregisterReceiver(myReceiver);
+            myReceiverIsRegistered = false;
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!myReceiverIsRegistered) {
+            registerReceiver(myReceiver, new IntentFilter("com.cs4492.cseuom.bluetoothdevicetracker"));
+            Toast.makeText(this,"Registered the broadcast listener",Toast.LENGTH_LONG);
+            myReceiverIsRegistered = true;
+        }
+    }
+
+    @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -261,11 +303,19 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.Paired) {
             // Handle the camera action
             startActivity(new Intent(MainActivity.this, PairedDevicesListActivity.class));
+
         } else if (id == R.id.Available) {
             startActivity(new Intent(MainActivity.this, AvailableDevicesList.class));
 
         } else if (id == R.id.nav_slideshow) {
-            startActivity(new Intent(MainActivity.this, ServerActivity.class));
+//            startActivity(new Intent(MainActivity.this, ServerActivity.class));
+            try {
+                new AcceptThread(BTAdapter, MainActivity.this.handler,getApplicationContext()).start();
+                Toast.makeText(MainActivity.this, "Started the thread", Toast.LENGTH_SHORT).show();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } else if (id == R.id.nav_manage) {
             startActivity(new Intent(MainActivity.this, AvailableDevicesList.class));
 
@@ -279,4 +329,19 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    private final Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            Log.d("check incoming message","dataaaaaaaaaaaaaaa");
+            Log.d("data", msg.obj.toString());
+            // String readMessage = new String(mmBuffer, 0, numBytes);
+            deviceNameTextBox.setText(msg.obj.toString());
+            Toast.makeText(MainActivity.this, "Message receivedd", Toast.LENGTH_LONG);
+
+            //super.handleMessage(msg);
+        }
+    };
+
+
 }

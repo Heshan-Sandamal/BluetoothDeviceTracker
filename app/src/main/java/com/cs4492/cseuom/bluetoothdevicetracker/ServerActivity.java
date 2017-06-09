@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cs4492.cseuom.bluetoothdevicetracker.scheduler.PingScheduler;
@@ -27,6 +28,9 @@ public class ServerActivity extends AppCompatActivity {
     @BindView(R.id.serverButton)
     Button serverButton;
     private BluetoothAdapter btAdapter;
+
+    @BindView(R.id.deviceNameTextBox)
+    TextView deviceNameTextBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,26 +48,12 @@ public class ServerActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                try {
-                    new AcceptThread(btAdapter,ServerActivity.this.handler).start();
-                    Toast.makeText(ServerActivity.this,"Started the thread",Toast.LENGTH_SHORT).show();
 
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
 
             }
         });
     }
 
-    private final Handler handler=new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            Log.d("data", msg.obj.toString());
-           // String readMessage = new String(mmBuffer, 0, numBytes);
-            Toast.makeText(ServerActivity.this,msg.obj.toString(),Toast.LENGTH_LONG);
-            super.handleMessage(msg);
-        }
-    };
+
 
 }

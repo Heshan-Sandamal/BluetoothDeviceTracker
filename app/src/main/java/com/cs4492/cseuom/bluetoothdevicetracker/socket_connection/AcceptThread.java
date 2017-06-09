@@ -3,6 +3,7 @@ package com.cs4492.cseuom.bluetoothdevicetracker.socket_connection;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
@@ -19,9 +20,10 @@ public class AcceptThread extends Thread {
     private static final String NAME = "heshan";
     private static final UUID MY_UUID = new UUID(8333, 3242);
     private final BluetoothServerSocket mmServerSocket;
+    private final Context applicationContext;
     private Handler handler;
 
-    public AcceptThread(BluetoothAdapter mBluetoothAdapter, Handler handler) throws IOException {
+    public AcceptThread(BluetoothAdapter mBluetoothAdapter, Handler handler, Context applicationContext) throws IOException {
         // Use a temporary object that is later assigned to mmServerSocket
         // because mmServerSocket is final.
         BluetoothServerSocket tmp = null;
@@ -34,6 +36,7 @@ public class AcceptThread extends Thread {
         }
         mmServerSocket = tmp;
         this.handler = handler;
+        this.applicationContext=applicationContext;
     }
 
     public void run() {
@@ -69,7 +72,7 @@ public class AcceptThread extends Thread {
 
     private void manageMyConnectedSocket(BluetoothSocket socket, Handler handler) throws IOException {
         //new MyBluetoothService(socket);
-        MyBluetoothService bds = new MyBluetoothService(handler,0);
+        MyBluetoothService bds = new MyBluetoothService(handler,applicationContext,0);
         MyBluetoothService.ConnectedThread ct = bds.new ConnectedThread(socket);
         ConnectedSockets.addToConnectedThreadsList(ct);
         ct.start();
