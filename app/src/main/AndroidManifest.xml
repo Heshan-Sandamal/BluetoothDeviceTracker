@@ -5,7 +5,6 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
-
     <!-- for android api above 6 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -23,7 +22,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
             </intent-filter>
         </activity>
         <activity
@@ -35,7 +34,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.cs4492.cseuom.bluetoothdevicetracker.MainActivity" />
         </activity>
-
         <activity
             android:name=".AvailableDevicesList"
             android:label="@string/title_activity_avialable_devices_list"
@@ -68,6 +66,16 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.cs4492.cseuom.bluetoothdevicetracker.MainActivity" />
+        </activity>
+        <activity
+            android:name=".SplashActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_splash"
+            android:theme="@style/FullscreenTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

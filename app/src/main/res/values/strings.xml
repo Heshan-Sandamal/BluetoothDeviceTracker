@@ -21,4 +21,8 @@
     <string name="start_server_des">This will start a server socket where the other client can be connected to. Please make sure there will be
         one server socket is enabled and all the other clients are get connected to it.
     </string>
+
+    <string name="title_activity_splash">SplashActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="splash_name">Bluetooth Device Tracker</string>
 </resources>
