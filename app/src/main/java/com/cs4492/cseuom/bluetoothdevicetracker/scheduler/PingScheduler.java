@@ -29,7 +29,7 @@ public class PingScheduler extends Service {
         time = new Timer(); // Instantiate Timer Object
 
         ScheduledTask st = new ScheduledTask(); // Instantiate SheduledTask class
-        time.schedule(st, 0, 2000); // Create Repetitively task for everyt1 secs
+        time.schedule(st, 0, 3000); // Create Repetitively task for everyt1 secs
     }
 
     @Override

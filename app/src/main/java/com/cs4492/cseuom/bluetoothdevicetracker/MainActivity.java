@@ -9,6 +9,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -79,6 +82,9 @@ public class MainActivity extends AppCompatActivity
 
     @BindView(R.id.clientConnectedListLabel)
     TextView clientConnectedListLabel;
+
+    @BindView(R.id.stop_alarm_button)
+    Button stopAlarmButton;
 
     BroadcastReceiver myReceiver = null;
     Boolean myReceiverIsRegistered = false;
@@ -185,6 +191,14 @@ public class MainActivity extends AppCompatActivity
                 Log.d("broadcase", "broadcast");
             }
         };
+
+        stopAlarmButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ringTone.stop();
+                stopAlarmButton.setVisibility(View.INVISIBLE);
+            }
+        });
 
         registerReceiver(myReceiver, new IntentFilter("com.cs4492.cseuom.bluetoothdevicetracker"));
         Toast.makeText(this, "Registered the broadcast listener", Toast.LENGTH_SHORT);
@@ -326,29 +340,43 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_manage) {
             startActivity(new Intent(MainActivity.this, AvailableDevicesList.class));
 
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
         }
+//        else if (id == R.id.nav_share) {
+//
+//        } else if (id == R.id.nav_send) {
+//
+//        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
+    private Ringtone ringTone;
     private final Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             MainActivity.this.setConnectedClientList();
-            String data=msg.obj.toString();
-            textView2.setText(data);
-
+            String data=null;
+            if(msg!=null && msg.obj!=null){
+                data=msg.obj.toString();
+                textView2.setText(data);
+            }
             try {
                 Log.d("data", msg.obj.toString());
 
                 if(AppMessageConstants.MASTER_DISCONNECTED.equals(data)){
                     ConnectedSockets.clearConnectedThreadsList();
+                    MainActivity.this.setConnectedClientList();
+                    try {
+                        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+                        ringTone = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                        ringTone.play();
+                        stopAlarmButton.setVisibility(View.VISIBLE);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
                 }
 
 

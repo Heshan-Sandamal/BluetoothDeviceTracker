@@ -181,6 +181,7 @@ public class PairedDevicesListActivity extends AppCompatActivity {
 
     private void scanDevices() {
         CheckBluetoothState();
+
     }
 
     private void CheckBluetoothState() {
@@ -204,7 +205,8 @@ public class PairedDevicesListActivity extends AppCompatActivity {
                     adapter.notifyDataSetChanged();
                 }
 //                mDeviceList.add("Available Devices are:");
-//                adapter.notifyDataSetChanged();
+                adapter.notifyDataSetChanged();
+
             } else {
                 //Prompt user to turn on Bluetooth
                 Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);

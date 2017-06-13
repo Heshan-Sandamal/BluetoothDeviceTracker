@@ -1,5 +1,6 @@
 package com.cs4492.cseuom.bluetoothdevicetracker.socket_connection;
 
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
@@ -75,10 +76,12 @@ public class ConnectThread extends Thread {
         MyBluetoothService bds=new MyBluetoothService(handler, this.applicationContext, 1);
         MyBluetoothService.ConnectedThread ct= bds.new ConnectedThread(mmSocket);
         ct.start();
-        ct.write("heshan".getBytes());
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        ct.write(bluetoothAdapter.getName());
         Log.d("writing message","wrinting meeeeeeeeeeeeee");
 
         AppMessageConstants.hostType= AppMessageConstants.CONNECTED_CLIENT;
+        ConnectedSockets.clearConnectedThreadsList();
         ConnectedSockets.addToConnectedThreadsList(ct);
 
     }

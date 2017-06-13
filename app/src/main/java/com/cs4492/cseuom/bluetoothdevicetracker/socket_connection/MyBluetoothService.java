@@ -4,6 +4,9 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -93,7 +96,7 @@ public class MyBluetoothService {
                         Message writtenMsg = mHandler.obtainMessage(
                                 MessageConstants.MESSAGE_WRITE, -1, -1, "sending message");
                         writtenMsg.sendToTarget();
-                        this.write(("received@"+new Date().toString()).getBytes());
+                        this.write(("received@"+new Date().toString()));
                     }
 
 
@@ -103,16 +106,23 @@ public class MyBluetoothService {
                             MessageConstants.MESSAGE_READ, 1024, -1,
                             AppMessageConstants.MASTER_DISCONNECTED);
                     errorMessage.sendToTarget();
+
+                    if(type==1){
+                        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+                        Ringtone ringTone = RingtoneManager.getRingtone(applicationContext, notification);
+                        ringTone.play();
+                    }
+
                     break;
                 }
             }
         }
 
         // Call this from the main activity to send data to the remote device.
-        public void write(byte[] bytes) throws IOException {
+        public void write(String message) throws IOException {
             try {
                 Message writtenMsg = mHandler.obtainMessage(
-                        MessageConstants.MESSAGE_WRITE, -1, -1, "sending message");
+                        MessageConstants.MESSAGE_WRITE, -1, -1, message);
                 writtenMsg.sendToTarget();
 
                 try {
@@ -120,7 +130,7 @@ public class MyBluetoothService {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                mmOutStream.write(bytes);
+                mmOutStream.write(message.getBytes());
                 mmOutStream.flush();
 
                 // Share the sent message with the UI activity.
