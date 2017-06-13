@@ -46,6 +46,7 @@ public class MessageDecoder {
 
     private static void unRegisterDevice(String devicename, String mac) {
         AppMessageConstants.isTracking = false;
+        ConnectedSockets.clearConnectedThreadsList();
     }
 
     private static String encodeMessage(String ack, String devicename, String mac, int i) {
