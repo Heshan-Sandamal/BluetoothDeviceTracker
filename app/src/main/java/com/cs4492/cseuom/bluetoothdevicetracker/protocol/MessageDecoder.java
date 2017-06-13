@@ -16,8 +16,8 @@ public class MessageDecoder {
         Log.d("reply","---"+message+"----");
         String[] parts = message.split("%");
         String reg = parts[0];
-        String devicename = parts[1];
-        String mac = parts[2];
+        String devicename="";
+        String mac ="";
 
         if (reg.equals("REG")) {
             RegisterDevice(devicename, mac);
