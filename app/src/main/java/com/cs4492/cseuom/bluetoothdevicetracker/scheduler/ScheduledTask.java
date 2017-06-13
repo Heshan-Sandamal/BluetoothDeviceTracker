@@ -27,7 +27,7 @@ public class ScheduledTask extends TimerTask {
         for (MyBluetoothService.ConnectedThread ob:socketObjectsList){
 
             try {
-                ob.write("Pinging to "+ob.getMmSocket().getRemoteDevice().getName());
+                ob.write("PING");
             }catch (Exception e){
                 Log.e("error in writing",ob.getName());
                 ConnectedSockets.getSocketObjectsList().remove(ob);

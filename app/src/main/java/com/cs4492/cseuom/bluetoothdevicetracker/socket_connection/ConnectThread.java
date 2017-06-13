@@ -77,10 +77,11 @@ public class ConnectThread extends Thread {
         MyBluetoothService.ConnectedThread ct= bds.new ConnectedThread(mmSocket);
         ct.start();
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        ct.write(bluetoothAdapter.getName());
+        ct.write("REG%"+bluetoothAdapter.getName()+"%"+bluetoothAdapter.getAddress());
         Log.d("writing message","wrinting meeeeeeeeeeeeee");
 
         AppMessageConstants.hostType= AppMessageConstants.CONNECTED_CLIENT;
+        AppMessageConstants.isTracking=true;
         ConnectedSockets.clearConnectedThreadsList();
         ConnectedSockets.addToConnectedThreadsList(ct);
 

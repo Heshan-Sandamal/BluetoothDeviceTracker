@@ -14,6 +14,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.cs4492.cseuom.bluetoothdevicetracker.protocol.AppMessageConstants;
+import com.cs4492.cseuom.bluetoothdevicetracker.protocol.MessageDecoder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -92,11 +93,24 @@ public class MyBluetoothService {
                             readMessage);
                     readMsg.sendToTarget();
 
+
                     if(type==1){
-                        Message writtenMsg = mHandler.obtainMessage(
-                                MessageConstants.MESSAGE_WRITE, -1, -1, "sending message");
-                        writtenMsg.sendToTarget();
-                        this.write(("received@"+new Date().toString()));
+                        //decode message
+                        String replyMessage = MessageDecoder.decodeMessage(readMessage);
+                        if(readMessage!=null){
+                            this.write(replyMessage);
+                        }else{
+//                            //for pinging reply
+//                            Message writtenMsg = mHandler.obtainMessage(
+//                                    MessageConstants.MESSAGE_WRITE, -1, -1, "sending message");
+//                            writtenMsg.sendToTarget();
+                        }
+//                        this.write(("received@"+new Date().toString()));
+                    }else if(type==0){
+                        String replyMessage = MessageDecoder.decodeMessage(readMessage);
+                        if(readMessage!=null){
+                            this.write(replyMessage);
+                        }
                     }
 
 
@@ -107,7 +121,7 @@ public class MyBluetoothService {
                             AppMessageConstants.MASTER_DISCONNECTED);
                     errorMessage.sendToTarget();
 
-                    if(type==1){
+                    if(type==1 && AppMessageConstants.isTracking){
                         Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
                         Ringtone ringTone = RingtoneManager.getRingtone(applicationContext, notification);
                         ringTone.play();

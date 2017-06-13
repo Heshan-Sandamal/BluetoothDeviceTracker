@@ -10,4 +10,5 @@ public class AppMessageConstants {
     public static String MASTER_DISCONNECTED="master disconnected";
 
     public static String hostType;
+    public static boolean isTracking=false;
 }

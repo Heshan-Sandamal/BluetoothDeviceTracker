@@ -161,6 +161,7 @@ public class MainActivity extends AppCompatActivity
                 List<MyBluetoothService.ConnectedThread> socketObjectsList = ConnectedSockets.getSocketObjectsList();
                 Log.d("dfd", "message");
                 startService(new Intent(MainActivity.this, PingScheduler.class));
+                AppMessageConstants.isTracking=true;
 //                for (MyBluetoothService.ConnectedThread ob:socketObjectsList){
 //                    Log.d("sending msg","message");
 //                    ob.write("sending message".getBytes());
@@ -172,6 +173,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 stopService(new Intent(MainActivity.this, PingScheduler.class));
+                AppMessageConstants.isTracking=false;
             }
         });
 
@@ -273,8 +275,24 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         if (AppMessageConstants.CONNECTED_CLIENT.equals(AppMessageConstants.hostType)) {
             setConnectedClientList();
-            MainActivity.this.startServiceButton.setEnabled(false);
-            MainActivity.this.stopServiceButton.setEnabled(false);
+//            MainActivity.this.startServiceButton.setEnabled(false);
+            startServiceButton.setText("Unregister");
+
+            startServiceButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    List<MyBluetoothService.ConnectedThread> socketObjectsList = ConnectedSockets.getSocketObjectsList();
+                    if(socketObjectsList.size()>0){
+                        try {
+                            socketObjectsList.get(0).write("UNREG");
+                        } catch (IOException e) {
+                            Log.d("error",e.getMessage());
+                        }
+                    }
+                }
+            });
+
+            MainActivity.this.stopServiceButton.setVisibility(View.INVISIBLE);
             MainActivity.this.clientConnectedListLabel.setText("Connected Server");
             this.textView2.setText("This device is tracked using Bluetooth");
         }
@@ -369,10 +387,14 @@ public class MainActivity extends AppCompatActivity
                     ConnectedSockets.clearConnectedThreadsList();
                     MainActivity.this.setConnectedClientList();
                     try {
-                        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-                        ringTone = RingtoneManager.getRingtone(getApplicationContext(), notification);
-                        ringTone.play();
-                        stopAlarmButton.setVisibility(View.VISIBLE);
+
+                        if(AppMessageConstants.isTracking){
+                            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+                            ringTone = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                            ringTone.play();
+                            stopAlarmButton.setVisibility(View.VISIBLE);
+                        }
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
