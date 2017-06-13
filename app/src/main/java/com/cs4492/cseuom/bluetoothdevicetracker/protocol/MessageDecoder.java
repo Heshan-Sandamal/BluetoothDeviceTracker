@@ -1,5 +1,7 @@
 package com.cs4492.cseuom.bluetoothdevicetracker.protocol;
 
+import android.util.Log;
+
 import com.cs4492.cseuom.bluetoothdevicetracker.socket_connection.ConnectedSockets;
 
 /**
@@ -11,8 +13,8 @@ public class MessageDecoder {
     public static String decodeMessage(String message) {
         String message1 = "REG%device%Mac";
 
-
-        String[] parts = message1.split("%");
+        Log.d("reply","---"+message+"----");
+        String[] parts = message.split("%");
         String reg = parts[0];
         String devicename = parts[1];
         String mac = parts[2];

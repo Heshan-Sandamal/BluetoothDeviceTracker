@@ -107,6 +107,7 @@ public class MyBluetoothService {
                         }
 //                        this.write(("received@"+new Date().toString()));
                     }else if(type==0){
+
                         String replyMessage = MessageDecoder.decodeMessage(readMessage);
                         if(replyMessage!=null){
                             this.write(replyMessage);
@@ -134,6 +135,9 @@ public class MyBluetoothService {
 
         // Call this from the main activity to send data to the remote device.
         public void write(String message) throws IOException {
+
+            Log.d("sending message",message);
+
             try {
                 Message writtenMsg = mHandler.obtainMessage(
                         MessageConstants.MESSAGE_WRITE, -1, -1, message);
