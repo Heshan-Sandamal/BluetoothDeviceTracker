@@ -97,7 +97,7 @@ public class MyBluetoothService {
                     if(type==1){
                         //decode message
                         String replyMessage = MessageDecoder.decodeMessage(readMessage);
-                        if(readMessage!=null){
+                        if(replyMessage!=null){
                             this.write(replyMessage);
                         }else{
 //                            //for pinging reply
@@ -108,7 +108,7 @@ public class MyBluetoothService {
 //                        this.write(("received@"+new Date().toString()));
                     }else if(type==0){
                         String replyMessage = MessageDecoder.decodeMessage(readMessage);
-                        if(readMessage!=null){
+                        if(replyMessage!=null){
                             this.write(replyMessage);
                         }
                     }
