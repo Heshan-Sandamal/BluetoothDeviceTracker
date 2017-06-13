@@ -90,6 +90,9 @@ public class MyBluetoothService {
                     readMsg.sendToTarget();
 
                     if(type==1){
+                        Message writtenMsg = mHandler.obtainMessage(
+                                MessageConstants.MESSAGE_WRITE, -1, -1, "sending message");
+                        writtenMsg.sendToTarget();
                         this.write(("received@"+new Date().toString()).getBytes());
                     }
 
@@ -108,13 +111,20 @@ public class MyBluetoothService {
         // Call this from the main activity to send data to the remote device.
         public void write(byte[] bytes) throws IOException {
             try {
+                Message writtenMsg = mHandler.obtainMessage(
+                        MessageConstants.MESSAGE_WRITE, -1, -1, "sending message");
+                writtenMsg.sendToTarget();
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 mmOutStream.write(bytes);
                 mmOutStream.flush();
 
                 // Share the sent message with the UI activity.
-                Message writtenMsg = mHandler.obtainMessage(
-                        MessageConstants.MESSAGE_WRITE, -1, -1, mmBuffer);
-                writtenMsg.sendToTarget();
+
             } catch (IOException e) {
                 Log.d("Error",e.getMessage());
 

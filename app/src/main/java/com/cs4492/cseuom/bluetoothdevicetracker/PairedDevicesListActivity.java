@@ -127,7 +127,7 @@ public class PairedDevicesListActivity extends AppCompatActivity {
                     ConnectThread connectThread = new ConnectThread(bluetoothDevice,PairedDevicesListActivity.this.handler,getApplicationContext());
                     connectThread.start();
                     Toast.makeText(PairedDevicesListActivity.this,"Connected to the thread",Toast.LENGTH_SHORT).show();
-                    finish();
+//                    PairedDevicesListActivity.this.finish();
 
 
                     // Initiate a connection request in a separate thread
@@ -219,6 +219,8 @@ public class PairedDevicesListActivity extends AppCompatActivity {
             super.handleMessage(msg);
         }
     };
+
+
 
 
 

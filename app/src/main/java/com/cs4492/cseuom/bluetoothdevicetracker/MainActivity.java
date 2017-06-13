@@ -204,9 +204,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         if (mDeviceList.isEmpty()) {
-            textView2.setVisibility(View.VISIBLE);
-        } else {
-            textView2.setVisibility(View.INVISIBLE);
+            textView2.setText(R.string.not_connected_to_network);
         }
 
 
@@ -255,6 +253,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -263,7 +262,9 @@ public class MainActivity extends AppCompatActivity
             MainActivity.this.startServiceButton.setEnabled(false);
             MainActivity.this.stopServiceButton.setEnabled(false);
             MainActivity.this.clientConnectedListLabel.setText("Connected Server");
+            this.textView2.setText("This device is tracked using Bluetooth");
         }
+
     }
 
     @Override
@@ -306,7 +307,9 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.Paired) {
             // Handle the camera action
-            startActivity(new Intent(MainActivity.this, PairedDevicesListActivity.class));
+            Intent intent = new Intent(MainActivity.this, PairedDevicesListActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(intent);
 
         } else if (id == R.id.Available) {
             startActivity(new Intent(MainActivity.this, AvailableDevicesList.class));
@@ -339,12 +342,15 @@ public class MainActivity extends AppCompatActivity
         public void handleMessage(Message msg) {
             MainActivity.this.setConnectedClientList();
             String data=msg.obj.toString();
+            textView2.setText(data);
+
             try {
                 Log.d("data", msg.obj.toString());
 
                 if(AppMessageConstants.MASTER_DISCONNECTED.equals(data)){
                     ConnectedSockets.clearConnectedThreadsList();
                 }
+
 
             } catch (Exception e) {
                 Log.e("error", "error message");
