@@ -285,6 +285,7 @@ public class MainActivity extends AppCompatActivity
                     if(socketObjectsList.size()>0){
                         try {
                             socketObjectsList.get(0).write("UNREG");
+                            MainActivity.this.setConnectedClientList();
                         } catch (IOException e) {
                             Log.d("error",e.getMessage());
                         }
@@ -295,7 +296,7 @@ public class MainActivity extends AppCompatActivity
             MainActivity.this.stopServiceButton.setVisibility(View.INVISIBLE);
             MainActivity.this.clientConnectedListLabel.setText("Connected Server");
             this.textView2.setText("This device is tracked using Bluetooth");
-            MainActivity.this.setConnectedClientList();
+
         }
 
     }
