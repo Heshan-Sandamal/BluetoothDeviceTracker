@@ -284,8 +284,9 @@ public class MainActivity extends AppCompatActivity
                     List<MyBluetoothService.ConnectedThread> socketObjectsList = ConnectedSockets.getSocketObjectsList();
                     if(socketObjectsList.size()>0){
                         try {
-                            socketObjectsList.get(0).write("UNREG");
                             MainActivity.this.setConnectedClientList();
+                            socketObjectsList.get(0).write("UNREG");
+
                         } catch (IOException e) {
                             Log.d("error",e.getMessage());
                         }
