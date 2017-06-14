@@ -88,9 +88,12 @@ public class MyBluetoothService {
                     // Send the obtained bytes to the UI activity.
 
                     String readMessage = new String(mmBuffer, 0, numBytes);
+
+                    String readMessageForUI = MessageDecoder.getReadMessageForUI(readMessage);
                     Message readMsg = mHandler.obtainMessage(
                             MessageConstants.MESSAGE_READ, numBytes, -1,
-                            readMessage);
+                            readMessageForUI);
+
                     readMsg.sendToTarget();
 
 
@@ -117,9 +120,11 @@ public class MyBluetoothService {
 
                 } catch (IOException e) {
                     Log.d(TAG, "Input stream was disconnected", e);
+
                     Message errorMessage = mHandler.obtainMessage(
                             MessageConstants.MESSAGE_READ, 1024, -1,
                             AppMessageConstants.MASTER_DISCONNECTED);
+
                     errorMessage.sendToTarget();
 
                     if(type==1 && AppMessageConstants.isTracking){
@@ -138,9 +143,11 @@ public class MyBluetoothService {
 
             Log.d("sending message",message);
 
+            String writeMessageForUI = MessageDecoder.getWriteMessageForUI(message);
+
             try {
                 Message writtenMsg = mHandler.obtainMessage(
-                        MessageConstants.MESSAGE_WRITE, -1, -1, message);
+                        MessageConstants.MESSAGE_WRITE, -1, -1, writeMessageForUI);
                 writtenMsg.sendToTarget();
 
                 try {

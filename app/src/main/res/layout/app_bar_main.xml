@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:attr/colorControlHighlight"
     android:fitsSystemWindows="true"
+    tools:background="?android:attr/colorBackground"
     tools:context="com.cs4492.cseuom.bluetoothdevicetracker.MainActivity">
 
     <android.support.design.widget.AppBarLayout

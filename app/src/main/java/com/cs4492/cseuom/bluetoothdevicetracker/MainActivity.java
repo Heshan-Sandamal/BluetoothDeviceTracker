@@ -189,8 +189,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onReceive(Context context, Intent intent) {
-                System.out.print("jesddddddddddddddddddddddddddddddddddddddddddddd");
-                Log.d("broadcase", "broadcast");
+                Log.d("broadcast", "broadcast");
             }
         };
 
@@ -206,6 +205,8 @@ public class MainActivity extends AppCompatActivity
         Toast.makeText(this, "Registered the broadcast listener", Toast.LENGTH_SHORT);
         myReceiverIsRegistered = true;
 
+
+
     }
 
     private void setConnectedClientList() {
@@ -215,11 +216,12 @@ public class MainActivity extends AppCompatActivity
 
         for (MyBluetoothService.ConnectedThread connectedThread : socketObjectsList) {
             BluetoothDevice remoteDevice = connectedThread.getMmSocket().getRemoteDevice();
-            mDeviceList.add(remoteDevice.getName() + remoteDevice.getAddress());
+            mDeviceList.add(remoteDevice.getName() +"  "+ remoteDevice.getAddress());
 
         }
 
         if (mDeviceList.isEmpty()) {
+//            textView2.setTextSize(12);
             textView2.setText(R.string.not_connected_to_network);
         }
 
@@ -284,7 +286,10 @@ public class MainActivity extends AppCompatActivity
                     List<MyBluetoothService.ConnectedThread> socketObjectsList = ConnectedSockets.getSocketObjectsList();
                     if(socketObjectsList.size()>0){
                         try {
-                            socketObjectsList.get(0).write("UNREG");
+                            MyBluetoothService.ConnectedThread connectedThread = socketObjectsList.get(0);
+                            connectedThread.write("UNREG%"+BluetoothAdapter.getDefaultAdapter().getName()+"%"+BluetoothAdapter.getDefaultAdapter().getAddress());
+                            ConnectedSockets.removeConnectedThreads(connectedThread.getMmSocket().getRemoteDevice().getAddress());
+                            setConnectedClientList();
 
                         } catch (IOException e) {
                             Log.d("error",e.getMessage());
@@ -296,6 +301,7 @@ public class MainActivity extends AppCompatActivity
             MainActivity.this.stopServiceButton.setVisibility(View.INVISIBLE);
             MainActivity.this.clientConnectedListLabel.setText("Connected Server");
             this.textView2.setText("This device is tracked using Bluetooth");
+//            textView2.setCompoundDrawablesWithIntrinsicBounds(R.drawable.tracking, 0, 0, 0);
 
         }
 
@@ -377,6 +383,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void handleMessage(Message msg) {
             MainActivity.this.setConnectedClientList();
+
             String data=null;
             if(msg!=null && msg.obj!=null){
                 data=msg.obj.toString();
@@ -409,6 +416,10 @@ public class MainActivity extends AppCompatActivity
             }
 
             Toast.makeText(MainActivity.this, "Message receivedd", Toast.LENGTH_LONG);
+            if (ConnectedSockets.getSocketObjectsList().isEmpty()) {
+//            textView2.setTextSize(12);
+                textView2.setText(R.string.not_connected_to_network);
+            }
 
             //super.handleMessage(msg);
         }

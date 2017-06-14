@@ -24,10 +24,11 @@ public class ScheduledTask extends TimerTask {
         List<MyBluetoothService.ConnectedThread> socketObjectsList = ConnectedSockets.getSocketObjectsList();
 
         Log.d("scheduler is running",new Date().toString());
+
         for (MyBluetoothService.ConnectedThread ob:socketObjectsList){
 
             try {
-                ob.write("PING");
+                ob.write("PING%"+ob.getMmSocket().getRemoteDevice().getName()+"%"+ob.getMmSocket().getRemoteDevice().getAddress());
             }catch (Exception e){
                 Log.e("error in writing",ob.getName());
                 ConnectedSockets.getSocketObjectsList().remove(ob);

@@ -22,7 +22,7 @@
         one server socket is enabled and all the other clients are get connected to it.
     </string>
 
-    <string name="title_activity_splash">SplashActivity</string>
+    <string name="title_activity_splash">BluetoothDeviceTracker</string>
     <string name="dummy_button">Dummy Button</string>
-    <string name="splash_name">Bluetooth Device Tracker</string>
+    <string name="splash_name">Bluetooth Tracker</string>
 </resources>
